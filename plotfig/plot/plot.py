@@ -13,7 +13,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 # local
-from plot.Figure import Figure
+from plot.figure import Figure
 
 
 ################
