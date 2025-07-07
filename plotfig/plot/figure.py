@@ -126,10 +126,12 @@ class Axis (object):
     """ standard initialization for Axis object. """
     def __init__ (self):
         self.reset_label()
-        self.reset_limits()
-        self.set_scale()
-        self.set_major_ticks()
-        self.set_minor_ticks()
+        self.reset_maximum()
+        self.reset_minimum()
+        # self.reset_limits()
+        # self.set_scale()
+        # self.set_major_ticks()
+        # self.set_minor_ticks()
 
     """ generates string describing Axis Object. """
     def ___str___ (self):
@@ -164,6 +166,78 @@ class Axis (object):
             exit(NONZERO_EXITCODE)
 
     ## AXIS LIMITS
+
+    """ resets both minimum and maximum axis limits. """
+    def reset_limits (self):
+        self.reset_minimum()
+        self.reset_maximum()
+
+    """ sets both minimum and maximum axis limits. """
+    def set_limits (self, minval = None, maxval = None):
+        self.set_maximum(maxval)
+        self.set_minimum(minval)
+
+    """ reset / remove maximum value assigned to axis. """
+    def reset_maximum (self):
+        self.set_maximum()
+
+    """ assign maximum value to axis. """
+    def set_maximum(self, m = None):
+        if isinstance(m, float) or isinstance(m, int):
+            # check that the maximum is greater than the minimum, if one has been assigned
+            if self.has_minimum() and self.get_minimum() > m:
+                # the maximum passed to the method is less than the minimum already assigned to the axis
+                # TODO :: throw warning
+                # do not assign the maximum to axis
+                self.max_limit = None
+            else:
+                # a minimum has not been assigned to the maximum is greater than the minimum
+                if isinstance(m, int):
+                    self.max_limit = float(m) # type cast the integer as a float
+                else:
+                    self.max_limit = m # assign the float
+        else:
+            # if not double or integer, assign none
+            self.max_limit = None
+
+    """ return maximum value assigned to axis. Otherwise, return None, if no maximum has been assigned. """
+    def get_maximum (self):
+        return self.max_limit
+
+    """ returns boolean that determines if maximum has been assigned to limit. """
+    def has_maximum (self):
+        return self.max_limit is not None
+
+    """ reset / remove minimum value assigned to axis. """
+    def reset_minimum (self):
+        self.set_minimum()
+
+    """ assign minimum value to axis. """
+    def set_minimum (self, m = None):
+        if isinstance(m, float) or isinstance(m, int):
+            # check that the minimum passed to the method is less than the maximum, if one has been assigned
+            if self.has_maximum() and self.get_maximum() < m:
+                # the minimum passed to the method is greater than the maximum already assigned to the axis
+                # TODO :: THROW WARNING
+                # do not assign minimum to axis
+                self.min_limit = None
+            else:
+                # assign the minimum to the axis
+                if isinstance(m, int):
+                    self.min_limit = float(m) # type cast the integer as a float
+                else:
+                    self.min_limit = m # assign the float
+        else:
+            # if not int or double, assign None
+            self.min_limit = None
+
+    """ return minimum assigned to axis. Otherwise, return None if no minimum has been assigned. """
+    def get_minimum (self):
+        return self.min_limit
+
+    """ check if minimum has been assigned to axis. """
+    def has_minimum (self):
+        return self.min_limit is not None 
 
 
     ## AXIS SCALE
