@@ -17,6 +17,9 @@ import itertools # used for iterating over markers
 ## PARAMETERS ##
 ################
 
+## non zero exit codes for flagging errors
+NONZERO_EXITCODE = 120
+
 ## constants, defaults for Label class
 default_label_size = 12
 minimum_label_size = 6
@@ -122,11 +125,56 @@ class Axis (object):
 
     """ standard initialization for Axis object. """
     def __init__ (self):
-        self.set_label()
+        self.reset_label()
         self.reset_limits()
         self.set_scale()
         self.set_major_ticks()
         self.set_minor_ticks()
+
+    """ generates string describing Axis Object. """
+    def ___str___ (self):
+        pass
+
+    ## AXIS LABEL
+
+    """ resets axis label to empty object. """
+    def reset_label (self):
+        self.label = Label(l = default_axis_label, s = None)
+
+    """ assigns string and font size to label. """
+    def set_label (self, l = None, s = None):
+        self.label = Label(l = l, s = s)
+
+    """ assigns string to label. """
+    def set_label_string(self, l):
+        if isinstance(l, str):
+            self.label.set_label(l)
+        else:
+            print("ERROR :: AXIS_CLASS :: label string 'l' must be string type.")
+            exit(NONZERO_EXITCODE)
+
+    """ assign fontsize to label. """
+    def set_label_fontsize(self, s):
+        if isinstance(s, int):
+            self.label.set_size(s)
+        elif isinstance(s, float):
+            self.label.set_size(int(s))
+        else:
+            print("ERROR :: AXIS_CLASS :: label fontsize 's' must be integer or float type. ")
+            exit(NONZERO_EXITCODE)
+
+    ## AXIS LIMITS
+
+
+    ## AXIS SCALE
+
+
+    ## AXIS MAJOR TICKS
+
+
+    ## AXIS MINOR TICKS
+
+
 
 ## Figure class
 class Figure (object):
