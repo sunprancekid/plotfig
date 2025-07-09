@@ -28,6 +28,9 @@ minimum_label_size = 6
 default_number_major_ticks = 3
 default_number_minor_ticks = 3
 default_major_format_string = "{:.2f}" # floating point number with two decimal places
+scale_linear = "linear"
+scale_log = "log"
+default_scale = scale_linear
 
 ## constants, defaults for Figure class
 default_title_label = None
@@ -125,13 +128,12 @@ class Axis (object):
 
     """ standard initialization for Axis object. """
     def __init__ (self):
-        self.reset_label()
-        self.reset_maximum()
-        self.reset_minimum()
-        # self.reset_limits()
-        # self.set_scale()
-        # self.set_major_ticks()
+        self.reset_label() # I think there might be a more clever way to handle the label assignments for reset, set, and set_label_string / set_label_fontsize
+        self.reset_limits()
+        self.reset_scale() # add option for specifying the log base scale
+        self.reset_major_ticks()
         # self.set_minor_ticks()
+        # self.reset_data()
 
     """ generates string describing Axis Object. """
     def ___str___ (self):
@@ -141,14 +143,35 @@ class Axis (object):
 
     """ resets axis label to empty object. """
     def reset_label (self):
-        self.label = Label(l = default_axis_label, s = None)
+        self.set_label()
 
     """ assigns string and font size to label. """
     def set_label (self, l = None, s = None):
-        self.label = Label(l = l, s = s)
+        if l is None and s is None:
+            self.label = None
+        else:
+            self.label = Label(l = l, s = s)
+
+    """ returns label assigned to axis. returns None type if label has not been assigned. """
+    def get_label (self):
+        if self.label is None:
+            return Label (l = "")
+        else:
+            return self.label
+
+    """ returns boolean determining if a label has been assigned to the axis. """
+    def has_label(self):
+        return self.label is not None
+
+    """ returns boolean which determines if a label has been assigned to the object. """
+    def has_label (self):
+        return self.label is not None
 
     """ assigns string to label. """
     def set_label_string(self, l):
+        # if a label has not been assigned to the axis, create a new one
+        if not self.has_label():
+            self.set_label("")
         if isinstance(l, str):
             self.label.set_label(l)
         else:
@@ -157,6 +180,9 @@ class Axis (object):
 
     """ assign fontsize to label. """
     def set_label_fontsize(self, s):
+        # if a label has not been assigned to the axis, create a new one
+        if not self.has_label():
+            self.set_label("")
         if isinstance(s, int):
             self.label.set_size(s)
         elif isinstance(s, float):
@@ -242,9 +268,80 @@ class Axis (object):
 
     ## AXIS SCALE
 
+    """ set default scale. """
+    def reset_scale(self):
+        self.set_scale()
+
+    """ set scale as either log or linear. """
+    def set_scale (self, s = None):
+        if not isinstance(s, str) or s is None:
+            self.scale = default_scale
+        else:
+            if s == scale_linear:
+                self.scale = scale_linear
+            elif s == scale_log:
+                self.scale = scale_log
+            else:
+                self.scale = default_scale
+
 
     ## AXIS MAJOR TICKS
 
+    """ resets tick marks assigned to object. """
+    def reset_major_ticks (self):
+        self.major_ticks = None
+        self.major_tick_labels = None
+
+    """ creates major axis with labels ranging from 'minval' to 'maxval' with 'nticks' tick marks. if the scale assigned to the axis is logarithm, the ticks are spaces according to a logarithmic scale corresponding to the assigned base (default is 10); otherwise the tick marks are spaced linearly apart. minval and maxval must not be specified if the minimum and maximum values have already been assigned to the axis. """
+    def set_major_ticks (self, minval = None, maxval = None, nticks = None):
+
+        # boolean determining if minval / maxval has been passed to method and meet the appropriate criteria
+        has_minval = minval is not None and (isinstance(minval, float) or isinstance(minval, int))
+        has_maxval = maxval is not None and (isinstance(maxval, float) or isinstance(maxval, int))
+        has_nticks = nticks is not None and (isinstance(nticks, int))
+
+        if has_minval and has_maxval:
+            # if both minimum and maximum have been assigned to the method, assign both simultaneously
+            self.set_limits(minval = minval, maxval = maxval)
+        else:
+            # assign either the minval or the maxval
+            # check that axis already has minimum or maximum values if they weren't specified in the method call
+            if has_minval:
+                # reset / assign the minimum value to the one passed to the method
+                self.set_minimum(minval)
+            elif not self.has_minimum():
+                # a minval has not been passed to the method and the axis has not been assigned a minimum value
+                ## TODO determine the minimum value from the data
+                print("ERROR :: AXIS_CLASS :: set_major_ticks :: 'minval' not specified.")
+                exit(NONZERO_EXITCODE)
+
+            # check the maxval assigned to the axis
+            if has_maxval:
+                # reset / assign the maximum value assigned to the axis
+                self.set_maximum(maxval)
+            elif not self.has_maximum():
+                # a maxval has not been passed to the method and the axis has not been assigned a maximum value already
+                ## TODO determine the maximum value from the data
+                print("ERROR :: AXIS_CLASS :: set_major_ticks :: 'maxval' not specified.")
+                exit(NONZERO_EXITCODE)
+
+        # check that the number of ticks has been specified
+        if not has_nticks:
+            # report to user
+            print("ERROR :: AXIS_CLASS :: set_major_ticks :: 'nticks' not specified.")
+            exit(NONZERO_EXITCODE)
+
+        # use the min and max values assigned to the axis to create the ticks
+        step = (self.get_maximum() - self.get_minimum()) / (nticks - 1)
+        self.major_ticks = np.arange(self.get_minimum(), self.get_maximum() + step, step)
+
+    """ returns major ticks assigned to axis. """
+    def get_major_ticks (self):
+        return self.major_ticks, self.major_tick_labels
+
+    """ returns boolean determining if major ticks have already been assigned to the axis."""
+    def has_major_ticks (self):
+        return self.major_ticks is not None
 
     ## AXIS MINOR TICKS
 
