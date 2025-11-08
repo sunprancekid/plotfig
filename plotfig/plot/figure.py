@@ -356,18 +356,22 @@ class Figure (object):
         ## related to figure formatting, labelling
         self.set_title_label()
         self.set_subtitle_label()
+        ## xaxis call
         self.reset_xaxis_label()
         self.reset_xaxis_limits()
         # self.reset_xaxis_major_ticks()
         # self.reset_xaxis_minor_ticks()
+        ## yaxis call
         self.reset_yaxis_label()
         self.reset_yaxis_limits()
         self.reset_yaxis_major_ticks()
         self.reset_yaxis_minor_ticks()
+        ## color bar call
         # self.set_cbar_label()
         # self.set_cscheme()
         # self.set_max_cbar()
         # self.set_min_cbar()
+        ## other
         self.set_linscale()
         self.set_dpi()
         self.set_saveas()
