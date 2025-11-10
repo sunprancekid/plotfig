@@ -35,6 +35,54 @@ default_explode = 0.05
 #############
 ## METHODS ##
 #############
+# scatter plot
+def scatter (fig = None):
+
+    # check that figure exists
+    if fig is None:
+        print("ERROR :: scatter :: must specify 'fig'.")
+        exit()
+
+    # establish scatter plot
+    plt.figure(figsize=(7,5))
+    leg = [] # empty list used for legend
+    if fig.has_ivals():
+        # if the figure has unique isolated values
+        for i in fig.get_unique_ivals(rev = False):
+            line = plt.scatter(fig.get_xval_list(i), fig.get_yval_list(i), marker = fig.get_marker(i), markersize = markersize) 
+            leg.append(mlines.Line2D([], [], marker = fig.get_marker(i), ls = line[-1].get_ls(), label = fig.get_label(i), color = line[-1].get_color()))
+    else:
+        # otherwise the figure does not have isolated values, so just create one plot
+        plt.scatter(fig.get_xval_list(), fig.get_yval_list(), marker = fig.get_marker(), markersize = markersize)
+
+    # add xaxis min and max, used min and max to plot fits
+    xlim = plt.xlim(fig.get_xaxis_min(), fig.get_xaxis_max())
+
+
+    # set yaxis min and max, add labels
+    ylim = plt.ylim(fig.get_yaxis_min(), fig.get_yaxis_max())
+    if fig.get_title_label() is not None:
+        plt.suptitle(fig.get_title_label().get_label(), fontsize = fig.get_title_label().get_size())
+    if fig.get_subtitle_label() is not None:
+        plt.title(fig.get_subtitle_label().get_label(), fontsize = fig.get_subtitle_label().get_size())
+    plt.xlabel(fig.get_xaxis_label().get_label(), fontsize = fig.get_xaxis_label().get_size())
+    plt.ylabel(fig.get_yaxis_label().get_label(), fontsize = fig.get_yaxis_label().get_size())
+    # add the legend
+    plt.legend(handles = leg, loc = legendloc) # TODO increase size of legend labels
+
+    # add logscale
+    if fig.xaxis_is_logscale():
+        plt.xscale(fig.get_xaxis_scale(), base = fig.get_xaxis_scale_base())
+    if fig.yaxis_is_logscale():
+        plt.yscale(fig.get_yaxis_scale(), base = fig.get_yaxis_scale_base())
+
+    if save:
+        plt.savefig(fig.get_saveas(), dpi = fig.get_dpi(), bbox_inches='tight')
+    if show:
+        plt.show()
+
+    plt.close()
+
 # generate plot
 def gen_plot (fig = None, linewidth = default_plot_linewidth, markersize = default_plot_markersize, legendloc = default_legendloc, fit = None, show = True, save = True):
 
