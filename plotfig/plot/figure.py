@@ -134,6 +134,7 @@ class Axis (object):
         self.reset_scale() 
         self.reset_major_ticks()
         # self.set_minor_ticks()
+        # TODO :: add attribute to define scale type has being either catagories or numbers
 
     """ generates string describing Axis Object. """
     def ___str___ (self):
