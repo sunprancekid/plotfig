@@ -128,7 +128,7 @@ class Axis (object):
 
     """ standard initialization for Axis object. """
     def __init__ (self):
-        self.reset_label() # I think there might be a more clever way to handle the label assignments for reset, set, and set_label_string / set_label_fontsize
+        self.reset_label() 
         self.reset_limits()
         self.reset_scale() # add option for specifying the log base scale
         self.reset_major_ticks()
@@ -143,14 +143,25 @@ class Axis (object):
 
     """ resets axis label to empty object. """
     def reset_label (self):
-        self.set_label()
+        self.label = None
 
     """ assigns string and font size to label. """
     def set_label (self, l = None, s = None):
-        if l is None and s is None:
-            self.label = None
+        # if the axis does not have a label yet
+        if not self.has_label():
+            # if no attributes have been passed to the method
+            if l is None:
+                # assign None type to the axis label
+                self.label = None
+            else:
+                # assign a new label with new attributes to the axis
+                self.label = Label(l, s)
         else:
-            self.label = Label(l = l, s = s)
+            # update the existing label's attributes if they are not None type
+            if l is not None:
+                self.set_label_string(l)
+            if s is not None:
+                self.set_label_fontsize(s)
 
     """ returns label assigned to axis. returns None type if label has not been assigned. """
     def get_label (self):
@@ -163,10 +174,6 @@ class Axis (object):
     def has_label(self):
         return self.label is not None
 
-    """ returns boolean which determines if a label has been assigned to the object. """
-    def has_label (self):
-        return self.label is not None
-
     """ assigns string to label. """
     def set_label_string(self, l):
         # if a label has not been assigned to the axis, create a new one
@@ -175,7 +182,7 @@ class Axis (object):
         if isinstance(l, str):
             self.label.set_label(l)
         else:
-            print("ERROR :: AXIS_CLASS :: label string 'l' must be string type.")
+            print("ERROR :: Axis.set_label_string() :: label string 'l' must be string type.")
             exit(NONZERO_EXITCODE)
 
     """ assign fontsize to label. """
@@ -188,7 +195,7 @@ class Axis (object):
         elif isinstance(s, float):
             self.label.set_size(int(s))
         else:
-            print("ERROR :: AXIS_CLASS :: label fontsize 's' must be integer or float type. ")
+            print("ERROR :: Axis.set_label_fontsize() :: label fontsize 's' must be integer or float type. ")
             exit(NONZERO_EXITCODE)
 
     ## AXIS LIMITS
@@ -357,12 +364,12 @@ class Figure (object):
         self.set_title_label()
         self.set_subtitle_label()
         ## xaxis call
-        self.reset_xaxis_label()
+        self.reset_xaxis()
         self.reset_xaxis_limits()
         # self.reset_xaxis_major_ticks()
         # self.reset_xaxis_minor_ticks()
         ## yaxis call
-        self.reset_yaxis_label()
+        self.reset_yaxis()
         self.reset_yaxis_limits()
         self.reset_yaxis_major_ticks()
         self.reset_yaxis_minor_ticks()
@@ -473,7 +480,7 @@ class Figure (object):
 
     ## GETTERS AND SETTERS ##
 
-    ## DATA ##
+    ## DATA HANDLING ##
 
     # method used to initialize data stored withing figure object
     """ initializes data stored withing figure object. dataframe is removed, x, y, c, and i columns are reset. """
@@ -534,7 +541,6 @@ class Figure (object):
             self.reset_markers()
             self.reset_labels()
             self.reset_colors()
-
 
     # method that loads data from dataframe into figure object
     """ loads data from data frame into Figure object. xcol specifies the xaxis data, ycol specifies the yaxis data, ccol specifies the color column data, icol specifies the isolation column data. """
@@ -742,27 +748,23 @@ class Figure (object):
 
     ## XAXIS ##
 
-    # resets the xaxis label
-    """ method for initializing Figure x-axis label as empty label. """
-    def reset_xaxis_label (self, l = default_xaxis_label, s = None):
-        self.xaxis_label = Label(l, s)
+    # reset xaxis to empty Axis object with default attributes
+    def reset_xaxis(self):
+        self.xaxis = Axis()
 
     # adjust xaxis label properties
     def set_xaxis_label (self, l = None, s = None):
-        if l is not None:
-            self.xaxis_label.set_label(l)
-        if s is not None:
-            self.xaxis_label.set_size(s)
+        self.xaxis.set_label(l, s)
 
     # gets xaxis label as object
     """ returns x-axis label as Label object. """
     def get_xaxis_label (self):
-        return self.xaxis_label
+        return self.xaxis.get_label()
 
     # gets xaxis label as string
     """ returns x-axis label as string. """
     def get_xaxis_label_str (self):
-        return str(self.xaxis_label)
+        return str(self.xaxis.get_label())
 
     # sets the minimum and maximum limits for the xaxis
     """ method used to assign the xaxis minimum and maximum values at the same time. """
@@ -905,27 +907,23 @@ class Figure (object):
 
     ## YAXIS ##
 
-    # initializes the yaxis label
-    """ method for initializing Figure y-axis label. """
-    def reset_yaxis_label (self, l = default_yaxis_label, s = None):
-        self.yaxis_label = Label(l, s)
+    # initialize yaxis object
+    def reset_yaxis(self):
+        self.yaxis = Axis()
 
     # adjust yaxis label properties
     def set_yaxis_label (self, l = None, s = None):
-        if l is not None:
-            self.yaxis_label.set_label(l)
-        if s is not None:
-            self.yaxis_label.set_size(s)
+        self.yaxis.set_label(l, s)
 
     # gets the y-axis label as object
     """ returns the y-axis label as string. """
     def get_yaxis_label (self):
-        return self.yaxis_label
+        return self.yaxis.get_label()
 
     # gets the y-axis label as string
     """ returns the y-axis label as string. """
     def get_yaxis_label_str (self):
-        return str(self.yaxis_label)
+        return str(self.yaxis.get_label())
 
     # set the yaxis minimum and maximum values
     """ method that assigns minimum and maximum values to the yaxis limits. """
