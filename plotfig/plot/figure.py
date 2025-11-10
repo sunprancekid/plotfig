@@ -531,6 +531,9 @@ class Figure (object):
 
             # update dataframe
             self.df = pd.concat([self.df, pd.DataFrame(df_dict)], ignore_index = True)
+            self.reset_markers()
+            self.reset_labels()
+            self.reset_colors()
 
 
     # method that loads data from dataframe into figure object
