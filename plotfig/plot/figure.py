@@ -206,9 +206,9 @@ class Axis (object):
         self.reset_maximum()
 
     """ sets both minimum and maximum axis limits. """
-    def set_limits (self, minval = None, maxval = None):
-        self.set_maximum(maxval)
-        self.set_minimum(minval)
+    def set_limits (self, min_val = None, max_val = None):
+        self.set_maximum(max_val)
+        self.set_minimum(min_val)
 
     """ reset / remove maximum value assigned to axis. """
     def reset_maximum (self):
@@ -220,26 +220,26 @@ class Axis (object):
             # check that the maximum is greater than the minimum, if one has been assigned
             if self.has_minimum() and self.get_minimum() > m:
                 # the maximum passed to the method is less than the minimum already assigned to the axis
-                # TODO :: throw warning
+                print("ERROR :: Axis.set_maximum() :: unable to assign maximum ('{0}') to axis, lower than minimum value already assigned to axis ('{1}'). ".format(m, self.get_minimum()))
                 # do not assign the maximum to axis
-                self.max_limit = None
+                self.max = None
             else:
                 # a minimum has not been assigned to the maximum is greater than the minimum
                 if isinstance(m, int):
-                    self.max_limit = float(m) # type cast the integer as a float
+                    self.max = float(m) # type cast the integer as a float
                 else:
-                    self.max_limit = m # assign the float
+                    self.max = m # assign the float
         else:
             # if not double or integer, assign none
-            self.max_limit = None
+            self.max = None
 
     """ return maximum value assigned to axis. Otherwise, return None, if no maximum has been assigned. """
     def get_maximum (self):
-        return self.max_limit
+        return self.max
 
     """ returns boolean that determines if maximum has been assigned to limit. """
     def has_maximum (self):
-        return self.max_limit is not None
+        return self.max is not None
 
     """ reset / remove minimum value assigned to axis. """
     def reset_minimum (self):
@@ -251,26 +251,26 @@ class Axis (object):
             # check that the minimum passed to the method is less than the maximum, if one has been assigned
             if self.has_maximum() and self.get_maximum() < m:
                 # the minimum passed to the method is greater than the maximum already assigned to the axis
-                # TODO :: THROW WARNING
+                print("ERROR :: Axis.set_minimum() :: Unable to assign minimum ('{0}'), higher than maximum value already assigned to axis ('{1}').".format(m, self.get_maximum()))
                 # do not assign minimum to axis
-                self.min_limit = None
+                self.min = None
             else:
                 # assign the minimum to the axis
                 if isinstance(m, int):
-                    self.min_limit = float(m) # type cast the integer as a float
+                    self.min = float(m) # type cast the integer as a float
                 else:
-                    self.min_limit = m # assign the float
+                    self.min = m # assign the float
         else:
             # if not int or double, assign None
-            self.min_limit = None
+            self.min = None
 
     """ return minimum assigned to axis. Otherwise, return None if no minimum has been assigned. """
     def get_minimum (self):
-        return self.min_limit
+        return self.min
 
     """ check if minimum has been assigned to axis. """
     def has_minimum (self):
-        return self.min_limit is not None 
+        return self.min is not None 
 
 
     ## AXIS SCALE
@@ -365,12 +365,10 @@ class Figure (object):
         self.set_subtitle_label()
         ## xaxis call
         self.reset_xaxis()
-        self.reset_xaxis_limits()
         # self.reset_xaxis_major_ticks()
         # self.reset_xaxis_minor_ticks()
         ## yaxis call
         self.reset_yaxis()
-        self.reset_yaxis_limits()
         self.reset_yaxis_major_ticks()
         self.reset_yaxis_minor_ticks()
         ## color bar call
@@ -768,57 +766,38 @@ class Figure (object):
 
     # sets the minimum and maximum limits for the xaxis
     """ method used to assign the xaxis minimum and maximum values at the same time. """
-    def set_xaxis_limits (self, l = None, min_val = None, max_val = None):
+    def set_xaxis_limits (self, min_val = None, max_val = None):
 
-        # check for a list
-        if l is not None:
-            # pull min and max values from the list if they were not passed to the method
+        # if xaxis data has already been assigned to the figure object
+        if self.xcol is not None:
+            # pull min and max values from the list if they were not already provided to the method
             if min_val is None:
-                min_val = min(l)
+                min_val = min(self.df[self.xcol].to_list())
             if max_val is None:
-                max_val = max(l)
+                max_val = max(self.df[self.xcol].to_list())
 
         # assign the minimum and maximum values
-        self.set_xaxis_min(min_val)
-        self.set_xaxis_max(max_val)
-
-    # resets the minimum and maximum limits for the xaxis to None (used for initialization)
-    """ method used to initialize the xaxis limits to None. """
-    def reset_xaxis_limits (self):
-        self.xaxis_min = None
-        self.xaxis_max = None
+        self.xaxis.set_limits(min_val, max_val)
 
     # sets the minimum value for the xaxis limit
     """ method used the assign the xaxis minimum limit as double. """
     def set_xaxis_min (self, val = None):
-        # check the type passed as the minimum
-        if isinstance(val, float):
-            # if the minimum value is a float, assign it
-            self.xaxis_min = val
-        elif isinstance(val, int):
-            # if the number is an integer, change it to a floating point and assign it
-            self.xaxis_min = float(val)
+        self.xaxis.set_minimum(val)
 
     # sets the maximum value for the xaxis limit
     """ method used to assign the xaxis maximum as double. """
     def set_xaxis_max (self, val = None):
-        # check the type passed as the maximum
-        if isinstance (val, float):
-            # if the maximum value passed to the method is a float, assign it
-            self.xaxis_max = val
-        elif isinstance (val, int):
-            # if the value passed to the method is an integer, change it to a float and assign it
-            self.xaxis_max = float(val)
+        self.xaxis.set_maximum(val)
 
     # gets the minimum value for the xaxis limit
     """ method that returns the minimum value assigned to the xaxis limit. returns 'None' if unassigned. """
     def get_xaxis_min (self):
-        return self.xaxis_min
+        return self.xaxis.get_minimum()
 
     # gets the maximum value for the xaxis limit
     """ method that returns the maximum value assigned to the xaxis limit. returns 'None' if unassigned. """
     def get_xaxis_max (self):
-        return self.xaxis_max
+        return self.xaxis.get_maximum()
 
     # set the xaxis as either linear or logscale
     """ method sets the xaxis as either a linear or logscale. logscale base set the logscale base as default if not specified by user. """
@@ -927,57 +906,38 @@ class Figure (object):
 
     # set the yaxis minimum and maximum values
     """ method that assigns minimum and maximum values to the yaxis limits. """
-    def set_yaxis_limits (self, l = None, min_val = None, max_val = None):
+    def set_yaxis_limits (self, min_val = None, max_val = None):
 
-        # check if a list was passed to the method
-        if l is not None:
-            # use the list to assign min and max values, if unassigned
+        # if yaxis data has already been provided to the method
+        if self.ycol is not None:
+            # pull min and max values from the list if they were not already provided to the method
             if min_val is None:
-                min_val = min(l)
+                min_val = min(self.df[self.ycol].to_list())
             if max_val is None:
-                max_val = max(l)
+                max_val = max(self.df[self.ycol].to_list())
 
         # assign the minimum and maximum values
-        self.set_yaxis_min(min_val)
-        self.set_yaxis_max(max_val)
-
-    # reset the yaxis minimum and maximum limits
-    """ method used to initialize and reset yaxis limits to 'None' type. """
-    def reset_yaxis_limits(self):
-        self.yaxis_min = None
-        self.yaxis_max = None
+        self.yaxis.set_limits(min_val, max_val)
 
     # set yaxis minimum limit
     """ method that assigns a double as the yaxis minimum limit. """
     def set_yaxis_min (self, val):
-        # check the value type passed to the method
-        if isinstance (val, float):
-            # if the value is a float, assign it
-            self.yaxis_min = val
-        elif isinstance (val, int):
-            # if the value is an integer, change to a float and assign it
-            self.yaxis_min = float(val)
+        self.yaxis.set_minimum(val)
 
     # set yaxis maximum limit
     """ method that assigns a double as the yaxis maximum limit. """
     def set_yaxis_max (self, val):
-        # check the value type passed to the method
-        if isinstance (val, float):
-            # if the value is a float, assign it
-            self.yaxis_max = val
-        elif isinstance (val, int):
-            # if the value is an integer, change to a float and assign it
-            self.yaxis_max = float(val)
+        self.yaxis.set_maximum(val)
 
     # get the yaxis minimum limit
     """ method that returns the yaxis minimum limit as double. returns 'None' if unassigned. """
     def get_yaxis_min (self):
-        return self.yaxis_min
+        return self.yaxis.get_minimum()
 
     # get the yaxis maximum limit
     """ method that returns the yaxis maximum limit as double. returns 'None' is unassigned. """
     def get_yaxis_max (self):
-        return self.yaxis_max
+        return self.yaxis.get_maximum()
 
     # set the yaxis as either linear or logscale
     """ method sets the yaxis as either a linear or logscale. logscale base set the logscale base as default if not specified by user. """
