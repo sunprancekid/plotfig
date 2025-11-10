@@ -487,12 +487,64 @@ class Figure (object):
         self.icol_label_dict = None
         self.icol_color_dict = None
 
-    # method that loads data from datafram into figure object
-    """ loads data from data frame into Figure object. xcol specifies the xaxis data, ycol specifies the yaxis data, ccol specifies the color column data, icol specifies the isolation column data. """
-    def load_data (self, d = None, xcol = None, ycol = None, ccol = None, icol = None):
+    # load data from csv file
+    def append_from_csv (self, filename = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
+        pass
+        # create data frame from file
+        df_load = pd.read_csv(filename)
 
+        # check each coloumn exists, if specified
+        if (xcol is not None) and (xcol not in df_load.columns):
+            # throw error
+            print("ERROR :: Figure.append_from_csv :: '{:s}' column does not exist in '{:s}'.".format(xcol, filename))
+            return
+        if (ycol is not None) and (ycol not in df_load.columns):
+            # throw error
+            print("ERROR :: Figure.append_from_csv :: '{:s}' column does not exist in '{:s}'.".format(ycol, filename))
+            return
+        if (ccol is not None) and (ccol not in df_load.columns):
+            print("ERROR :: Figure.append_from_csv :: '{:s}' column does not exist in '{:s}'.".format(ccol, filename))
+            return
+        if (icol is not None) and (icol not in df_load.columns):
+            print("ERROR :: Figure.append_from_csv :: '{:s}' column does not exist in '{:s}'.".format(icol, filename))
+            return
+
+        # if a data frame has not already been created, pass data frame to load_data method
+        if self.df is None:
+            self.load_data(d = df_load, xcol = xcol, ycol = ycol, ccol = ccol, icol = icol, label = label)
+        else:
+            # append data to existing dataframe
+            df_dict = {}
+            if xcol is not None:
+                df_dict.update({self.xcol: df_load[xcol].to_list()})
+
+            if ycol is not None:
+                df_dict.update({self.ycol: df_load[ycol].to_list()})
+
+            if ccol is not None:
+                df_dict.update({self.ccol: df_load[ccol].to_list()})
+
+            if icol is not None:
+                df_dict.update({self.icol: df_load[icol].to_list()})
+            elif label is not None and self.icol is not None:
+                df_dict.update({self.icol: [label for _ in range(len(df_dict[self.xcol]))]})
+
+            # update dataframe
+            self.df = pd.concat([self.df, pd.DataFrame(df_dict)], ignore_index = True)
+
+
+    # method that loads data from dataframe into figure object
+    """ loads data from data frame into Figure object. xcol specifies the xaxis data, ycol specifies the yaxis data, ccol specifies the color column data, icol specifies the isolation column data. """
+    def load_data (self, d = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
+
+        # data frame must be passed to method
         if d is None:
             # df has not been specified, cannot load data
+            print("ERROR :: Figure.load_data() :: must pass dataframe to method as 'd'.")
+            return
+
+        if xcol is None or ycol is None:
+            print("ERROR :: Figure.load_data() :: must specify 'xcol' and 'ycol'.")
             return
 
         # reset data and load
@@ -518,6 +570,9 @@ class Figure (object):
         if icol is not None:
             self.icol = icol
             df_dict.update({icol: d[icol].to_list()})
+        elif label is not None:
+            self.icol = 'icol'
+            df_dict.update({'icol': [label for _ in range(len(df_dict[xcol]))]})
 
         self.df = pd.DataFrame(df_dict)
         self.reset_markers()
