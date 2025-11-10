@@ -392,7 +392,7 @@ class Figure (object):
         ## related to figure formatting, labelling
         self.set_title_label()
         self.set_subtitle_label()
-        ## xaxis call
+        ## xaxis call (would it be possible to encaspulte all axis activities within one set of methods?)
         self.reset_xaxis()
         # self.reset_xaxis_major_ticks()
         # self.reset_xaxis_minor_ticks()
