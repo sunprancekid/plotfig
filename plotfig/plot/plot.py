@@ -139,6 +139,10 @@ def gen_plot (fig = None, linewidth = default_plot_linewidth, markersize = defau
     plt.ylabel(fig.get_yaxis_label().get_label(), fontsize = fig.get_yaxis_label().get_size())
     # add the legend
     plt.legend(handles = leg, loc = legendloc) # TODO increase size of legend labels
+    # adjust major and minor ticks
+    if fig.yaxis_has_major_ticks():
+        plt.yticks(fig.get_yaxis_major_ticks())
+        plt.yticks(fig.get_yaxis_minor_ticks(), minor = True)
 
     # add logscale
     if fig.xaxis_is_logscale():

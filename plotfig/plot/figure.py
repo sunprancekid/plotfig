@@ -26,8 +26,9 @@ minimum_label_size = 6
 
 ## constants, defaults used for Axis class
 default_number_major_ticks = 3
-default_number_minor_ticks = 3
+default_number_minor_ticks = 4
 default_major_format_string = "{:.2f}" # floating point number with two decimal places
+default_padding_value = 0.05
 scale_linear = "linear"
 scale_log = "log"
 default_scale = scale_linear
@@ -133,7 +134,7 @@ class Axis (object):
         self.reset_limits()
         self.reset_scale() 
         self.reset_major_ticks()
-        # self.set_minor_ticks()
+        self.reset_minor_ticks()
         # TODO :: add attribute to define scale type has being either catagories or numbers
 
     """ generates string describing Axis Object. """
@@ -326,54 +327,61 @@ class Axis (object):
     """ resets tick marks assigned to object. """
     def reset_major_ticks (self):
         self.major_ticks = None
-        self.major_tick_labels = None
 
     """ creates major axis with labels ranging from 'minval' to 'maxval' with 'nticks' tick marks. if the scale assigned to the axis is logarithm, the ticks are spaces according to a logarithmic scale corresponding to the assigned base (default is 10); otherwise the tick marks are spaced linearly apart. minval and maxval must not be specified if the minimum and maximum values have already been assigned to the axis. """
-    def set_major_ticks (self, minval = None, maxval = None, nticks = None):
+    def set_major_ticks (self, minval = None, maxval = None, nticks = default_number_major_ticks, pad = default_padding_value):
 
-        # boolean determining if minval / maxval has been passed to method and meet the appropriate criteria
+        # boolean determining if input meet criteria
         has_minval = minval is not None and (isinstance(minval, float) or isinstance(minval, int))
         has_maxval = maxval is not None and (isinstance(maxval, float) or isinstance(maxval, int))
-        has_nticks = nticks is not None and (isinstance(nticks, int))
+        has_nticks = nticks is not None and (isinstance(nticks, int)) and (nticks > 1)
+        has_pad = pad is not None and (isinstance(pad, float)) and (pad > 0.001)
 
-        if has_minval and has_maxval:
-            # if both minimum and maximum have been assigned to the method, assign both simultaneously
-            self.set_limits(minval = minval, maxval = maxval)
+        # check the minimum value
+        if has_minval:
+            # if a mininimum value has been specified, reset the minimum limit
+            self.set_minimum(minval)
+        elif not has_minval and self.has_minimum():
+            # if a minimum has not been provided but the axis already has a value, use that one
+            minval = self.get_minimium()
         else:
-            # assign either the minval or the maxval
-            # check that axis already has minimum or maximum values if they weren't specified in the method call
-            if has_minval:
-                # reset / assign the minimum value to the one passed to the method
-                self.set_minimum(minval)
-            elif not self.has_minimum():
-                # a minval has not been passed to the method and the axis has not been assigned a minimum value
-                ## TODO determine the minimum value from the data
-                print("ERROR :: AXIS_CLASS :: set_major_ticks :: 'minval' not specified.")
-                exit(NONZERO_EXITCODE)
+            # unable to parse minimum value, throw error
+            print("ERROR :: Axis.set_major_ticks() :: 'minval' not specified, must be float or integer.")
+            return
 
-            # check the maxval assigned to the axis
-            if has_maxval:
-                # reset / assign the maximum value assigned to the axis
-                self.set_maximum(maxval)
-            elif not self.has_maximum():
-                # a maxval has not been passed to the method and the axis has not been assigned a maximum value already
-                ## TODO determine the maximum value from the data
-                print("ERROR :: AXIS_CLASS :: set_major_ticks :: 'maxval' not specified.")
-                exit(NONZERO_EXITCODE)
+        # check the maximum value
+        if has_maxval:
+            # if a maximum value has been specified, reset the maximum limit
+            self.set_maximum(maxval)
+        elif not has_maxval and self.has_maximum():
+            # if a maximum has not been specified but the axis already as one, use that value
+            maxval = self.get_maximum()
+        else:
+            # unable to parse maximum value, throw error
+            print("ERROR :: Axis.set_major_ticks() :: 'maxval' not specified, must be float or integer.")
+            return
 
         # check that the number of ticks has been specified
         if not has_nticks:
             # report to user
-            print("ERROR :: AXIS_CLASS :: set_major_ticks :: 'nticks' not specified.")
-            exit(NONZERO_EXITCODE)
+            print("ERROR :: Axis.set_major_ticks() :: 'nticks' not specified, must be integer 2 or greater.")
+            return
 
+        # check the padding
+        if not has_pad:
+            # if the padding is an incorrect value, use the default
+            # print("ERROR :: Axis.set_major_ticks() :: unable to use 'pad' passed to  method ({0}), must be float greater than 0. Using default.".format(pad))
+            pad = default_padding_value
+
+        # pad the limits
+        self.set_limits(min_val = minval - ((maxval - minval) * pad), max_val = maxval + (maxval - minval) * pad)
         # use the min and max values assigned to the axis to create the ticks
-        step = (self.get_maximum() - self.get_minimum()) / (nticks - 1)
-        self.major_ticks = np.arange(self.get_minimum(), self.get_maximum() + step, step)
+        step = (maxval - minval) / (nticks - 1)
+        self.major_ticks = np.arange(minval, maxval + step, step)
 
     """ returns major ticks assigned to axis. """
     def get_major_ticks (self):
-        return self.major_ticks, self.major_tick_labels
+        return self.major_ticks
 
     """ returns boolean determining if major ticks have already been assigned to the axis."""
     def has_major_ticks (self):
@@ -381,7 +389,43 @@ class Axis (object):
 
     ## AXIS MINOR TICKS
 
+    # reset the minor ticks 
+    def reset_minor_ticks (self):
+        self.minor_ticks = None
 
+    # set the minor axis ticks
+    def set_minor_ticks(self, nticks = default_number_minor_ticks):
+
+        # check the appropriate information has been passed to the method
+        has_nticks = nticks is not None and isinstance(nticks, int) and (nticks > 0)
+
+        if not has_nticks:
+            # report to user
+            print("ERROR :: Axis.set_minor_ticks() :: 'nticks' not specified, must be integer 1 or greater.")
+            return
+
+        if not self.has_major_ticks():
+            # cannot assign minor ticks if major ticks have not been assigned
+            print ("ERROR :: Axis.set_minor_ticks() :: cannot assign minor ticks to axis if major ticks have not been assigned.")
+            return
+
+        # parse the minimum and maximum values from the major axis
+        minor_ticks = np.empty(0)
+        for i in range(self.major_ticks.size - 1):
+            print(self.major_ticks[i], self.major_ticks[i + 1])
+            step = (self.major_ticks[i + 1] - self.major_ticks[i]) / (nticks + 1)
+            arr = np.arange(self.major_ticks[i] + step, self.major_ticks[i + 1], step)
+            minor_ticks = np.append(minor_ticks, arr)
+
+        self.minor_ticks = minor_ticks
+
+    # return minor ticks
+    def get_minor_ticks (self):
+        return self.minor_ticks
+
+    # return boolean determining if minor ticks have been assigned to axis
+    def has_minor_ticks (self):
+        return self.minor_ticks is None
 
 ## Figure class
 class Figure (object):
@@ -394,12 +438,8 @@ class Figure (object):
         self.set_subtitle_label()
         ## xaxis call (would it be possible to encaspulte all axis activities within one set of methods?)
         self.reset_xaxis()
-        # self.reset_xaxis_major_ticks()
-        # self.reset_xaxis_minor_ticks()
         ## yaxis call
         self.reset_yaxis()
-        self.reset_yaxis_major_ticks()
-        self.reset_yaxis_minor_ticks()
         ## color bar call
         # self.set_cbar_label()
         # self.set_cscheme()
@@ -979,104 +1019,35 @@ class Figure (object):
     def get_yaxis_scale_base (self):
         return self.yaxis.get_logscale_base()
 
-    """ reset the major ticks assigned to yaxis to an empty type. """
-    def reset_yaxis_major_ticks(self):
-        self.yaxis_major_ticks = None
-
-    """ reset the minor ticks assigned to yaxis to an empty type. """
-    def reset_yaxis_minor_ticks(self):
-        self.yaxis_minor_ticks = None
+    # method used to set the tick marks and tick labels for the major and minor yaxis
+    """ method sets the tick marks used for the yaxis."""
+    def set_yaxis_ticks(self, minval = None, maxval = None, nmajorticks = default_number_major_ticks, nminorticks = default_number_minor_ticks):
+        self.yaxis.set_major_ticks(minval = minval, maxval = maxval, nticks = nmajorticks)
+        self.yaxis.set_minor_ticks(nminorticks)
 
     """ assigns major ticks to yaxis. """
-    def set_yaxis_major_ticks(self, minval = None, maxval = None, nticks = default_number_major_ticks, labels = None):
-
-        # if minval is none, use the one assigned to the yaxis
-        if minval is None:
-            if self.get_yaxis_min() is None:
-                # cannot create custom ticks without minimum value
-                return
-            else:
-                minval = self.get_yaxis_min()
-
-        # if maxval is none, use the one assigned to the yaxis
-        if maxval is None:
-            if self.get_yaxis_max() is None:
-                # cannot create custom ticka without maximum value
-                return
-            else:
-                maxval = self.get_yaxis_max()
-
-        # create array
-        step = (maxval - minval) / (nticks - 1)
-        self.yaxis_major_ticks = np.arange(minval, maxval + step, step)
+    def set_yaxis_major_ticks(self, minval = None, maxval = None, nticks = default_number_major_ticks):
+        self.yaxis.set_major_ticks(minval, maxval, nticks)
 
     """ returns the major ticks assigned to the yaxis. """
     def get_yaxis_major_ticks(self):
-        return self.yaxis_major_ticks
+        return self.yaxis.get_major_ticks()
+
+    # returns boolean determining if the yaxis has major ticks
+    def yaxis_has_major_ticks(self):
+        return self.yaxis.has_major_ticks()
 
     """ assigns the minor ticks for the yaxis. """
-    def set_yaxis_minor_ticks(self, minval = None, maxval = None, nticks = default_number_minor_ticks):
-
-        # if minval is none, use the one assigned to the yaxis
-        if minval is None:
-            if self.get_yaxis_min() is None:
-                # cannot create custom ticks without minimum value
-                return
-            else:
-                minval = self.get_yaxis_min()
-
-        # if maxval is none, use the one assigned to the yaxis
-        if maxval is None:
-            if self.get_yaxis_max() is None:
-                # cannot create custom ticka without maximum value
-                return
-            else:
-                maxval = self.get_yaxis_max()
-
-        # create array
-        step = (maxval - minval) / (nticks - 1)
-        self.yaxis_minor_ticks = np.arange(minval, maxval + step, step)
+    def set_yaxis_minor_ticks(self, nticks = default_number_minor_ticks):
+        self.yaxis.set_minor_ticks(nticks)
 
     """ returns the minor ticks assigned to the y_axis. """
     def get_yaxis_minor_ticks(self):
-        return self.yaxis_minor_ticks
+        return self.yaxis.get_minor_ticks()
 
-    # method used to set the tick marks and tick labels for the major and minor yaxis
-    """ method sets the tick marks used for the yaxis."""
-    def set_yaxis_ticks(self, minval = None, maxval = None, nmajorticks = default_number_major_ticks, nminorticks = default_number_minor_ticks, format_string = default_major_format_string):
-
-        # check arguments passed to method
-        # minimum value used for yaxis
-        if minval is None and self.get_yaxis_min() is None:
-            # if no minimum value was passed to the method
-            # and a minimum value has not already been assigned
-            # assign the value as the minimum for the y axis
-            self.set_yaxis_min(self.df[self.ycol].min())
-        elif minval is not None:
-            # otherwise a minimum value was passed to the method
-            # assign that value passed to the method as the minimum for the y axis
-            # overwrite the old minimum (if there was one)
-            self.set_yaxis_min(minval)
-
-        # maximum value used for yaxis
-        if maxval is None and self.get_yaxis_max() is None:
-            # if no maximum value was passed to the method
-            # and a minimum value has not already been assigned
-            # assign the maximum value from the yaxis as the maximum value
-            self.set_yaxis_max(self.df[self.ycol].max())
-        elif maxval is not None:
-            # other a maximum value was passed to the method
-            # assign the value passed to the method as the maximum for the y axis
-            # overwrite the old maximum, if one was assigned
-            self.set_yaxis_max(maxval)
-
-        if self.yaxis_is_logscale():
-            # if the yaxis is logscale, determine the tick marks along a logscale
-            pass
-        else:
-            # otherwise, determine the tick marks along a linearscale
-            self.set_yaxis_major_ticks(nticks = nmajorticks)
-            self.set_yaxis_minor_ticks(nticks = (nmajorticks - 1) * (1 + nminorticks) + 1)
+    """ returns boolean determining if minor ticks have been assigned to the y-axis. """
+    def yaxis_has_minor_ticks(self):
+        return self.yaxis.has_minor_ticks()
 
     ## DPI ##
 

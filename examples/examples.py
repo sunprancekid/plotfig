@@ -37,6 +37,7 @@ if scatter: # run scatter example
 	fig.set_yaxis_label('$SS$ or $HT$ Order Parameter')
 	fig.set_label(ival = "HT", label = "Head-to-Tail ($HT$)")
 	fig.set_label(ival = "SS", label = "Side-to-Side ($SS$)")
+	fig.set_yaxis_ticks(minval = 0., maxval = 1., nmajorticks = 3)
 	fig.reset_markers(['D', '^'])
 	# show scatter
 	gen_plot(fig, linewidth = 0, legendloc = 'lower center', save = False)
