@@ -27,6 +27,9 @@ from plot.plot import gen_plot
 scatter = ('scatter' in sys.argv) or ('all' in sys.argv)
 
 ## SCRIPT
+## TODO :: add plot example with logscale axis
+## TODO :: add bar chart example
+## TODO :: add pie chart example
 if scatter: # run scatter example
 	# load data from csv
 	fig = Figure()
@@ -41,4 +44,5 @@ if scatter: # run scatter example
 	fig.set_xaxis_ticks(minval = 0., maxval = 1., nmajorticks = 4)
 	fig.reset_markers(['D', '^'])
 	# show scatter
+	# TODO :: change scatter from plot to new scatter plot
 	gen_plot(fig, linewidth = 0, legendloc = 'lower center', save = False)
