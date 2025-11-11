@@ -424,7 +424,7 @@ class Axis (object):
 
     # return boolean determining if minor ticks have been assigned to axis
     def has_minor_ticks (self):
-        return self.minor_ticks is None
+        return self.minor_ticks is not None
 
 ## Figure class
 class Figure (object):
