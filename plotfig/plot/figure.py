@@ -897,41 +897,35 @@ class Figure (object):
     def get_xaxis_scale_base (self):
         return self.xaxis.get_logscale_base()
 
-    # method used to set the tick marks and tick labels for the major and minor xaxis
+    # method used to set the tick marks for the major and minor xaxis
     """ method sets the tick marks used for the xaxis."""
-    def set_xaxis_ticks(self, minval = None, maxval = None, nmajorticks = default_number_major_ticks, nminorticks = default_number_minor_ticks, format_string = default_major_format_string):
+    def set_xaxis_ticks(self, minval = None, maxval = None, nmajorticks = default_number_major_ticks, nminorticks = default_number_minor_ticks):
+        self.xaxis.set_major_ticks(minval = minval, maxval = maxval, nticks = nmajorticks)
+        self.xaxis.set_minor_ticks(nminorticks)
 
-        # check arguments passed to method
-        # minimum value used for x axis
-        if minval is None and self.get_xaxis_min() is None:
-            # if no minimum value was passed to the method
-            # and a minimum value has not already been assigned
-            # assign the minimum value in the xcol as the minimum value
-            self.set_xaxis_min(self.df[self.xcol].min())
-        elif minval is not None:
-            # otherwise a minimum value was passed to the method
-            # assign that value passed to the method as the minimum for the x axis
-            # overwrite the old minimum (if there was one)
-            self.set_xaxis_min(minval)
+    """ assigns major ticks to xaxis. """
+    def set_xaxis_major_ticks(self, minval = None, maxval = None, nticks = default_number_major_ticks):
+        self.xaxis.set_major_ticks(minval, maxval, nticks)
 
-        # maximum value used for xaxis
-        if maxval is None and self.get_xaxis_max() is None:
-            # if no maximum value was passed to the method
-            # and a minimum value has not already been assigned
-            # assign the maximum value in the x column as the max value
-            self.set_xaxis_max(self.df[self.xcol].max())
-        elif maxval is not None:
-            # other a maximum value was passed to the method
-            # assign the value passed to the method as the maximum for the y axis
-            # overwrite the old maximum, if one was assigned
-            self.set_xaxis_max(maxval)
+    """ returns the major ticks assigned to the xaxis. """
+    def get_xaxis_major_ticks(self):
+        return self.xaxis.get_major_ticks()
 
-        if self.xaxis_is_logscale():
-            # if the yaxis is logscale, determine the tick marks along a logscale
-            pass
-        else:
-            # otherwise, determine the tick marks along a linearscale
-            pass
+    # returns boolean determining if the xaxis has major ticks
+    def xaxis_has_major_ticks(self):
+        return self.xaxis.has_major_ticks()
+
+    """ assigns the minor ticks for the xaxis. """
+    def set_xaxis_minor_ticks(self, nticks = default_number_minor_ticks):
+        self.xaxis.set_minor_ticks(nticks)
+
+    """ returns the minor ticks assigned to the x_axis. """
+    def get_xaxis_minor_ticks(self):
+        return self.xaxis.get_minor_ticks()
+
+    """ returns boolean determining if minor ticks have been assigned to the x-axis. """
+    def xaxis_has_minor_ticks(self):
+        return self.xaxis.has_minor_ticks()
 
     # assigns values to ticks used for
 
