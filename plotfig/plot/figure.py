@@ -412,7 +412,6 @@ class Axis (object):
         # parse the minimum and maximum values from the major axis
         minor_ticks = np.empty(0)
         for i in range(self.major_ticks.size - 1):
-            print(self.major_ticks[i], self.major_ticks[i + 1])
             step = (self.major_ticks[i + 1] - self.major_ticks[i]) / (nticks + 1)
             arr = np.arange(self.major_ticks[i] + step, self.major_ticks[i + 1], step)
             minor_ticks = np.append(minor_ticks, arr)
