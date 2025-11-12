@@ -11,7 +11,7 @@
 import sys, os
 # local
 from plot.figure import Figure
-from plot.plot import gen_plot
+from plot.plot import gen_plot, gen_scatter
 
 ## CONSTANTS / PARAMETERS
 # none
@@ -34,7 +34,6 @@ if plot: # run plot example
 	fig = Figure()
 	fig.append_from_csv('data/plot.csv', xcol = 'period', ycol = '10', icol = 'perm')
 	fig.add_format("$K$ = {:.1e}")
-	# TODO :: format label with string
 	# xaxis formatting
 	## TODO :: logscale formatting
 	##			- automatically set limits, filter negative data
@@ -60,9 +59,8 @@ if scatter: # run scatter example
 	fig.set_yaxis_label('$SS$ or $HT$ Order Parameter')
 	fig.set_label(ival = "HT", label = "Head-to-Tail ($HT$)")
 	fig.set_label(ival = "SS", label = "Side-to-Side ($SS$)")
-	fig.set_yaxis_ticks(minval = 0., maxval = 1., nmajorticks = 3)
-	fig.set_xaxis_ticks(minval = 0., maxval = 1., nmajorticks = 4)
+	fig.set_yaxis_ticks(minval = 0., maxval = 1., nmajorticks = 6)
+	fig.set_xaxis_ticks(minval = 0., maxval = 1., nmajorticks = 6)
 	fig.reset_markers(['D', '^'])
 	# show scatter
-	# TODO :: change scatter from plot to new scatter plot
-	gen_plot(fig, linewidth = 0, legendloc = 'lower center', save = False)
+	gen_scatter(fig, legendloc = 'above', save = False)
