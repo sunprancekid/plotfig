@@ -23,11 +23,30 @@ from plot.plot import gen_plot
 # none
 
 ## ARGUMENTS
+# boolean for running plot example
+plot = ('plot' in sys.argv) or ('all' in sys.argv)
 # boolean for running the scatter example
 scatter = ('scatter' in sys.argv) or ('all' in sys.argv)
 
 ## SCRIPT
-## TODO :: add plot example with logscale axis
+if plot: # run plot example
+	# load data
+	fig = Figure()
+	fig.append_from_csv('data/plot.csv', xcol = 'period', ycol = '10', icol = 'perm')
+	# TODO :: format label with string
+	# xaxis formatting
+	## TODO :: logscale formatting
+	##			- automatically set limits, filter negative data
+	##			- add padding algorithim to axis, for log vs. lin
+	## 			- set axis major and minor ticks for log vs. lin scale
+	fig.set_xaxis_label("Cyclic Period ($s$)")
+	fig.set_xaxis_limits()
+	fig.set_xaxis_scale(log = True)
+	# yaxis formatting
+	fig.set_yaxis_label("Dissipated Energy per Cycle ($kJ$)")
+	# show graph
+	gen_plot(fig, save = False)
+
 ## TODO :: add bar chart example
 ## TODO :: add pie chart example
 if scatter: # run scatter example
