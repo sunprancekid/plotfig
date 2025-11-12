@@ -36,7 +36,7 @@ if plot: # run plot example
 	fig.add_format("$K$ = {:.1e}")
 	# xaxis formatting
 	## TODO :: logscale formatting
-	##			- automatically set limits, filter negative data
+	##			- automatically set limits, mask negative data
 	##			- add padding algorithim to axis, for log vs. lin
 	## 			- set axis major and minor ticks for log vs. lin scale
 	fig.set_xaxis_label("Cyclic Period ($s$)")
@@ -63,4 +63,5 @@ if scatter: # run scatter example
 	fig.set_xaxis_ticks(minval = 0., maxval = 1., nmajorticks = 6)
 	fig.reset_markers(['D', '^'])
 	# show scatter
+	# TODO :: add major and minor gridlines
 	gen_scatter(fig, legendloc = 'above', save = False)
