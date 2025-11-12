@@ -703,6 +703,8 @@ class Figure (object):
         self.label_dict = {}
         for i in self.get_unique_ivals():
             self.label_dict.update({i: i}) # assign random marker to each ival
+        # empty format string
+        self.format_string = None
 
     # adjusts one label in label dictionary
     """ method changes one label in label dictionary to new string (not Label class). the label that is changed is the one that correspons to the ival used as a key in the label dictionary. """
@@ -711,9 +713,19 @@ class Figure (object):
             self.label_dict[ival] = label
 
     # returns one label in label dictionary
-    """ method returns label that correspons to ival in label dictionary. """
+    """ method returns label that corresponds to ival in label dictionary. """
     def get_label (self, ival = None):
-        return self.label_dict[ival]
+        if self.format_string is None:
+            # if the format string is empty, return the label
+            return self.label_dict[ival]
+        else:
+            # the format string is not empty, return the formatted data label
+            return self.format_string.format(self.label_dict[ival])
+
+    # format label with string
+    """ provide string with formats each ival when called."""
+    def add_format(self, format_string = None):
+        self.format_string = format_string
 
     # resets colormap used for each ival according to default or map passed to method
     """ initializes the colors which correspond to each unique ival. """

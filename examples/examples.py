@@ -33,6 +33,7 @@ if plot: # run plot example
 	# load data
 	fig = Figure()
 	fig.append_from_csv('data/plot.csv', xcol = 'period', ycol = '10', icol = 'perm')
+	fig.add_format("$K$ = {:.1e}")
 	# TODO :: format label with string
 	# xaxis formatting
 	## TODO :: logscale formatting
