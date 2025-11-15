@@ -11,7 +11,7 @@
 import sys, os
 # local
 from plot.figure import Figure
-from plot.plot import gen_plot, gen_scatter
+from plot.plot import gen_plot, gen_scatter, gen_pie_chart
 
 ## CONSTANTS / PARAMETERS
 # none
@@ -27,6 +27,8 @@ from plot.plot import gen_plot, gen_scatter
 plot = ('plot' in sys.argv) or ('all' in sys.argv)
 # boolean for running the scatter example
 scatter = ('scatter' in sys.argv) or ('all' in sys.argv)
+# boolean for running pie chart example
+pie = ('pie' in sys.argv) or ('all' in sys.argv)
 
 ## SCRIPT
 if plot: # run plot example
@@ -48,7 +50,15 @@ if plot: # run plot example
 	gen_plot(fig, save = False)
 
 ## TODO :: add bar chart example
-## TODO :: add pie chart example
+if pie:
+	# load data from csv
+	fig = Figure()
+	fig.append_from_csv('data/pie.csv', xcol = 'subclass', ycol = 'amount')
+	fig.set_title_label("Spending on Food in October 2025")
+	# TODO :: make this method more generic, less specific to personal finances
+	# TODO :: fix legend issue
+	gen_pie_chart(fig, add_amount = True, show = True, save = False)
+
 if scatter: # run scatter example
 	# load data from csv
 	fig = Figure()

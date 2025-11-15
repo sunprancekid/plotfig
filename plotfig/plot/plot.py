@@ -213,8 +213,10 @@ def gen_pie_chart (fig = None, labels = None, legend = True, explode = default_e
     for i in range(len(y)):
         if x[i] not in labels:
             continue
-        s[labels.index(x[i])] += abs(y[i])
-        t += abs(y[i])
+        # s[labels.index(x[i])] += abs(y[i])
+        s[labels.index(x[i])] += y[i]
+        # t += abs(y[i])
+        t += y[i]
 
     # remove any labels with 0., starting from the back
     pop_list = []
@@ -237,7 +239,7 @@ def gen_pie_chart (fig = None, labels = None, legend = True, explode = default_e
     explode_array = None
     if explode is not None:
         explode_array = [default_explode] * len(s)
-        print(explode_array)
+        # print(explode_array)
 
     # add figure labels
     f = plt.figure()
@@ -289,8 +291,10 @@ def gen_bar_chart (fig = None, icol = None, xlabels = None, stack = True, show =
     for i in range(len(y)):
         if x[i] not in xlabels:
             continue
-        s[xlabels.index(x[i])] += abs(y[i])
-        t += abs(y[i])
+        # s[xlabels.index(x[i])] += abs(y[i])
+        s[xlabels.index(x[i])] += y[i]
+        # t += abs(y[i])
+        t += y[i]
 
     # TODO sort values extra by an icol
 
