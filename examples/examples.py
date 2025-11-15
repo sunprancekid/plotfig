@@ -30,6 +30,14 @@ scatter = ('scatter' in sys.argv) or ('all' in sys.argv)
 # boolean for running pie chart example
 pie = ('pie' in sys.argv) or ('all' in sys.argv)
 
+## TODO :: create formatting class which contains:
+##			- figure dimensions
+##			- font sizing and type
+##			- dpi 
+##			- linewidths, markersize, bar widths, ... 
+##			- axis thickness, colors, size of marker labels
+##			- or, could keep this all within Figure .. (easier)
+
 ## SCRIPT
 if plot: # run plot example
 	# load data
