@@ -21,20 +21,6 @@ from plot.axis import Label, Axis
 ## non zero exit codes for flagging errors
 NONZERO_EXITCODE = 120
 
-## constants, defaults for Label class
-default_label_size = 12
-minimum_label_size = 6
-
-## constants, defaults used for Axis class
-default_number_major_ticks = 3
-default_number_minor_ticks = 4
-default_major_format_string = "{:.2f}" # floating point number with two decimal places
-default_padding_value = 0.05
-scale_linear = "linear"
-scale_log = "log"
-default_scale = scale_linear
-default_logscale_base = 10
-
 ## constants, defaults for Figure class
 default_title_label = None
 default_subtitle_label = None

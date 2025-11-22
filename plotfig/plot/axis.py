@@ -35,34 +35,14 @@ scale_log = "log"
 default_scale = scale_linear
 default_logscale_base = 10
 
-## constants, defaults for Figure class
-default_title_label = None
-default_subtitle_label = None
-default_xaxis_label = None
-default_yaxis_label = None
-default_dpi = 200
-minimum_dpi = 100
-default_file_location = "./"
-default_file_name = "figure"
-default_file_type = ".png"
-default_markerset = ["D", "^", "v", "<", "o", "s", "p", "*"]
-default_logscale_base = 10
-minimum_logscale_base = 0.1
-accepted_filetypes = [".png", ".tif"]
-default_cmap = "tab10"
-# defaults used for figures used in publications
-pubdefault_dpi = 300
-pubdefault_label_size = 18
-# pubdefault_tick_size
-
 
 ## METHODS ##
 # none
 
-
 ## CLASSES ##
 ## Label class
 class Label (object):
+
     """ stand initialization routine for Label object. """
     def __init__ (self, l = None, s = None):
         self.set_label(l)
