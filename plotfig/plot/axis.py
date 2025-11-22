@@ -4,7 +4,7 @@
 ## 17.11.2025
 
 ## FILENAME: axis.py
-## PURPOSEL: contains axis object
+## PURPOSEL: contains axis and label objects
 
 ##############
 ## PACKAGES ##
