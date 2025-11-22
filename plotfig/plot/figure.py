@@ -6,11 +6,12 @@
 ##############
 ## PACKAGES ##
 ##############
-
+# native / conda packages
 import pandas as pd
 import numpy as np
 import os # used to check path
 import itertools # used for iterating over markers
+# local
 from plot.axis import Label, Axis
 
 

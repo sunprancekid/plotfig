@@ -43,13 +43,60 @@ default_logscale_base = 10
 ## Label class
 class Label (object):
 
-    """ stand initialization routine for Label object. """
+    """ contains information corresponding to a label in plotted figures.
+
+    Attributes:
+    -----------
+    l : str
+        string used to display label.
+    s : int
+        label font size
+
+    Methods:
+    --------
+    set_label:
+        assign label string.
+    get_label:
+        returns label string.
+    set_size:
+        assigns label font size.
+    get_size:
+        returns label font size.
+    """
+
     def __init__ (self, l = None, s = None):
+        """ initializes Label object.
+        
+        default label string is empty and default label size is 12.
+
+        Parameters:
+        -----------
+        l : str
+            str to used for label.
+        s : int
+            font size to display label.
+
+        Returns:
+        --------
+        None
+
+        """
         self.set_label(l)
         self.set_size(s)
 
-    """ output Label object as string. """
     def __str__ (self):
+        """ returns string representing current state of Label object.
+
+        Parameters:
+        -----------
+        None
+
+        Returns:
+        --------
+        str
+            string representing current state of object.
+
+        """
 
         out = ""
         if self.label is None:
@@ -63,9 +110,19 @@ class Label (object):
 
     ## GETTERS AND SETTERS ##
 
-    # set label
-    """ set label as string. """
     def set_label (self, l = None):
+        """ assigns label string.
+
+        Parameters:
+        -----------
+        l : str
+            string to assign to label.
+
+        Returns:
+        --------
+        None
+
+        """
         if l is None or not isinstance(l, str):
             # if l is not an object or not a string
             self.label = None
@@ -73,17 +130,36 @@ class Label (object):
             # otherwise l is a string
             self.label = l
 
-    # return label
-    """ return label as string. """
     def get_label (self):
+        """ returns label string.
+
+        Parameters:
+        -----------
+        None
+
+        Returns:
+        --------
+        str
+            string assigned to Label.
+        """
         if self.label is None:
             return ""
         else:
             return self.label
 
-    # set label fontsize
-    """ get label size as interger no less than minimum. """
     def set_size (self, s = None):
+        """ assigns label font size.
+
+        Parameter:
+        ----------
+        s : int
+            integer greater than zero.
+
+        Returns:
+        --------
+        None
+
+        """
         if s is None or not isinstance(s, int):
             # if s is not an object or not an integer
             self.size = default_label_size
@@ -95,9 +171,19 @@ class Label (object):
                 # otherwise assign the value passed to the method
                 self.size = s
 
-    # return label font size
-    """ return label font size as integer. """
     def get_size (self):
+        """ returns label font size.
+
+        Parameters:
+        -----------
+        None
+
+        Returns:
+        --------
+        int
+            integer assigned to label font size.
+
+        """
         return self.size
 
 ## Axis class
@@ -216,7 +302,8 @@ class Axis (object):
 
         Returns:
         --------
-        None
+        str
+            string representing current state of object.
 
         """
         s = ""
