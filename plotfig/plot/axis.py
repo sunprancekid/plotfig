@@ -205,8 +205,21 @@ class Axis (object):
         returns boolean determining if axis has minor tick marks.
     """
 
-    """ standard initialization for Axis object. """
     def __init__ (self):
+        """ initialize Axis object.
+
+        limits, label, major and minor ticks are all 'None' type. default
+        axis scale is 'linear'.
+
+        Parameters:
+        -----------
+        None
+
+        Returns:
+        --------
+        None
+
+        """
         self.reset_label() 
         self.reset_limits()
         self.reset_scale() 
@@ -214,9 +227,18 @@ class Axis (object):
         self.reset_minor_ticks()
         # TODO :: add attribute to define scale type has being either catagories or numbers
 
-    """ generates string describing Axis Object. """
     def ___str___ (self):
-        """ generate string listing Axis object attributes."""
+        """ generate string describing state of Axis object attributes.
+
+        Parameters:
+        -----------
+        None
+
+        Returns:
+        --------
+        None
+
+        """
         s = ""
         s.append("Axis Label String: {0}\nAxis Label Fontsize: {1}\n".format(self.get_label_string(), self.get_label_fontsize()))
         s.append("Axis Limits (min, max): ({0}, {1})\n".format(self.get_minimum(), self.get_maximum()))
@@ -809,7 +831,7 @@ class Axis (object):
         Returns:
         --------
         None
-        
+
         """
 
         # check the appropriate information has been passed to the method
