@@ -12,8 +12,7 @@
 # conda / native 
 import pandas as pd
 import numpy as np
-import os # used to check path
-import itertools # used for iterating over markers
+import math
 
 
 ## PARAMETERS ## 
@@ -37,7 +36,45 @@ default_logscale_base = 10
 
 
 ## METHODS ##
-# none
+
+# converts linear scale to log scale
+def lin2log(x, b = 10):
+    """ converts number from linear scale to log scale.
+
+    Parameter:
+    ----------
+    x : float
+        real number greater than 0 to convert to logscale.
+    b : float
+        real number greater than 0, log scale base. 
+
+    Returns:
+    --------
+    float
+        log(x, 10) / log(b, 10)
+
+    """
+    return math.log(x) / math.log(b)
+
+# converts log scale to linear scale
+def log2lin (x, b = 10):
+    """ converts number from log scale to linear scale.
+
+    Parameter:
+    ----------
+    x : float
+        real number greater than 0 to convert to linear scale.
+    b : float
+        real number greater than 0, log scale base
+
+    Returns:
+    --------
+    float
+        power(b, x), or b ^ x 
+
+    """
+
+    return math.pow(b, x)
 
 ## CLASSES ##
 ## Label class
@@ -225,6 +262,8 @@ class Axis (object):
         resets the minimum and maximum limits.
     set_limits():
         assigns limits to minimum and / or maximum limits.
+    pad_limits():
+        scale limits by a percentage
     reset_maximum():
         removes maximum limit.
     set_maximum():
@@ -471,6 +510,42 @@ class Axis (object):
         """
         self.set_maximum(max_val)
         self.set_minimum(min_val)
+
+    def pad_limits (self, padval = default_padding_value):
+        """ scale axis minimum and maximum limits by a percentage.
+
+        Parameters:
+        -----------
+        padval : float
+            (optional) as precentage, amount to scale increase each tickmark by
+
+        Returns:
+        --------
+        None
+
+        """
+
+        if self.is_linearscale():
+            # pad the axis limits according to a logscale
+            maxval = self.get_maximum()
+            minval = self.get_minimum()
+            # pad axis limits according to linear scale
+            self.set_limits(min_val = minval - ((maxval - minval) * padval), max_val = maxval + (maxval - minval) * padval)
+        else:
+            # pad the axis limits according to a logscale
+            maxval = self.get_maximum()
+            minval = self.get_minimum()
+            # convert to logscale
+            maxval = lin2log(maxval, self.get_logscale_base())
+            minval = lin2log(minval, self.get_logscale_base())
+            # pad
+            maxval = maxval + (maxval - minval) * padval
+            minval = minval - (maxval - minval) * padval
+            # convert to linscale
+            maxval = log2lin (maxval, self.get_logscale_base())
+            minval = log2lin (minval, self.get_logscale_base())
+            # assign new values
+            self.set_limits(min_val = minval, max_val = maxval)
 
     def reset_maximum (self):
         """ removes maximum limit.
@@ -832,10 +907,11 @@ class Axis (object):
             pad = default_padding_value
 
         # pad the limits
-        self.set_limits(min_val = minval - ((maxval - minval) * pad), max_val = maxval + (maxval - minval) * pad)
+        self.set_limits(min_val = minval , max_val = maxval)
+        self.pad_limits(pad)
         # use the min and max values assigned to the axis to create the ticks
         step = (maxval - minval) / (nticks - 1)
-        self.major_ticks = np.arange(minval, maxval + step, step)
+        # self.major_ticks = np.arange(minval, maxval + step, step)
 
     def get_major_ticks (self):
         """ returns axis major tick marks.

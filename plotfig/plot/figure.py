@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 import os # used to check path
 import itertools # used for iterating over markers
+from matplotlib import colormaps as mcmaps
 # local
 from plot.axis import Label, Axis
 
@@ -41,6 +42,17 @@ default_cmap = "tab10"
 pubdefault_dpi = 300
 pubdefault_label_size = 18
 # pubdefault_tick_size
+default_number_major_ticks = 3
+default_number_minor_ticks = 4
+scale_linear = "linear"
+scale_log = "log"
+default_scale = scale_linear
+
+## corresponding to color maps
+default_matplotlib_cmaps = list(mcmaps)
+discrete_matplotlib_cmaps = ['Pastel1', 'Pastel2', 'Paired', 'Accent', 'Dark2',
+                      'Set1', 'Set2', 'Set3', 'tab10', 'tab20', 'tab20b',
+                      'tab20c']
 
 
 #############
@@ -56,6 +68,24 @@ pubdefault_label_size = 18
 
 ## Figure class
 class Figure (object):
+
+    """ contains data and formatting for plotting figures with plot package.
+
+    Attributes:
+    -----------
+    df : DataFrame
+    title : Label
+    subtitle : Label
+    xaxis : Axis
+    yaxis : Axis
+    marker_dict : 
+    color_dict : 
+
+    Methods:
+    --------
+    
+
+    """
 
     """ standard initialization routine for Figure object. """
     def __init__ (self):
@@ -282,6 +312,80 @@ class Figure (object):
         self.reset_labels()
         self.reset_colors()
 
+    # method that returns list of xvalues
+    """ returns list of xvals contained within xcol. if ival is specified, xvals returned are those which share the same ival in icol (if any). """
+    def get_xval_list (self, ival = None):
+        if ival is None:
+            # return all xvals as a list
+            return self.df[self.xcol].to_list()
+        else:
+            # return xvals which share the same ival (if any)
+            tmpdf = self.df[self.df[self.icol] == ival]
+            return tmpdf[self.xcol].to_list()
+
+    # method that returns list of yvalues
+    """ returns list of yvals contained within ycol. if ival is specified, yvals returned are those which share the same ival in icol (if any)."""
+    def get_yval_list (self, ival = None):
+        if ival is None:
+            # return all yvals as a list
+            return self.df[self.ycol].to_list()
+        else:
+            # return yvales which share the same ival (if any)
+            tmpdf = self.df[self.df[self.icol] == ival]
+            return tmpdf[self.ycol].to_list()
+
+    # initialize list of labels that correspons to each unique ival in icol
+    """ method initializes labels used to describe each unique ival in plots as that ival stored within that Figure dataframe. """
+    def reset_labels(self):
+        # create empty dictionary
+        self.label_dict = {}
+        for i in self.get_unique_ivals():
+            self.label_dict.update({i: i}) # assign random marker to each ival
+        # empty format string
+        self.format_string = None
+
+    # adjusts one label in label dictionary
+    """ method changes one label in label dictionary to new string (not Label class). the label that is changed is the one that correspons to the ival used as a key in the label dictionary. """
+    def set_label (self, ival = None, label = None):
+        if ival in self.label_dict:
+            self.label_dict[ival] = label
+
+    # returns one label in label dictionary
+    """ method returns label that corresponds to ival in label dictionary. """
+    def get_label (self, ival = None):
+        if self.format_string is None:
+            # if the format string is empty, return the label
+            return self.label_dict[ival]
+        else:
+            # the format string is not empty, return the formatted data label
+            return self.format_string.format(self.label_dict[ival])
+
+    # format label with string
+    """ provide string with formats each ival when called."""
+    def add_format(self, format_string = None):
+        self.format_string = format_string
+
+    # method that determines if isolation column has been specified within the dataframe
+    """ returns boolean the determines if isolation column has been specified within dataframe. """
+    def has_ivals(self):
+        return self.icol is not None
+
+    # method that returns unique values for the isolation column
+    """ returns list of all unique values contained within icol. """
+    def get_unique_ivals (self, rev = False):
+        if self.icol is not None:
+            # if an icol has been specified return all unique items
+            l = self.df[self.icol].unique()
+            if rev:
+                return np.flip(l)
+            else:
+                return l
+        else:
+            # otherwise, if an icol has not been specified, return a list with empty string
+            return [""]
+
+    ## MARKERS ## 
+
     # initialize set of random set of markers that can be used for each unique ival in icol
     """ method generates a random set of markers than can be used with matplotlib. """
     def reset_markers(self, markerset = None):
@@ -324,88 +428,110 @@ class Figure (object):
         else:
             return self.marker_dict[ival]
 
-    # initialize list of labels that correspons to each unique ival in icol
-    """ method initializes labels used to describe each unique ival in plots as that ival stored within that Figure dataframe. """
-    def reset_labels(self):
-        # create empty dictionary
-        self.label_dict = {}
-        for i in self.get_unique_ivals():
-            self.label_dict.update({i: i}) # assign random marker to each ival
-        # empty format string
-        self.format_string = None
+    ## COLORS ## 
 
-    # adjusts one label in label dictionary
-    """ method changes one label in label dictionary to new string (not Label class). the label that is changed is the one that correspons to the ival used as a key in the label dictionary. """
-    def set_label (self, ival = None, label = None):
-        if ival in self.label_dict:
-            self.label_dict[ival] = label
-
-    # returns one label in label dictionary
-    """ method returns label that corresponds to ival in label dictionary. """
-    def get_label (self, ival = None):
-        if self.format_string is None:
-            # if the format string is empty, return the label
-            return self.label_dict[ival]
-        else:
-            # the format string is not empty, return the formatted data label
-            return self.format_string.format(self.label_dict[ival])
-
-    # format label with string
-    """ provide string with formats each ival when called."""
-    def add_format(self, format_string = None):
-        self.format_string = format_string
-
-    # resets colormap used for each ival according to default or map passed to method
-    """ initializes the colors which correspond to each unique ival. """
-    def reset_colors(self, cmap = None):
+    def has_cmap (self):
+        """ returns boolean determining if Figure has assigned color map.
         
-        # assign default cmap if none was specified
-        if cmap is None:
-            cmap = default_cmap
+        Parameters:
+        -----------
+        None
 
-        # assign unique color to each unique ival
-        # TODO :: check how I handled this with highlight plot
+        Returns:
+        --------
+        boolean
+            'True' if colormap has been assigned to Figure, else 'False'.
 
-    # method that determines if isolation column has been specified within the dataframe
-    """ returns boolean the determines if isolation column has been specified within dataframe. """
-    def has_ivals(self):
-        return self.icol is not None
+        """
 
-    # method that returns unique values for the isolation column
-    """ returns list of all unique values contained within icol. """
-    def get_unique_ivals (self, rev = False):
-        if self.icol is not None:
-            # if an icol has been specified return all unique items
-            l = self.df[self.icol].unique()
-            if rev:
-                return np.flip(l)
+        return self.cmap is not None
+
+    def reset_colors(self):
+        """ resets colors assigned to dataset to None. 
+        
+        Parameters:
+        -----------
+        None
+
+        Returns:
+        --------
+        None
+
+        """
+
+        self.cmap = None
+        self.color_dict = None
+
+    def set_cmap (self, cmap = None):
+        
+        # check color map
+        if isinstance(cmap, str):
+            # if the color cmap is a string, check if it matches the accepted
+            # color maps in matplot lib
+            if cmap not in default_matplotlib_cmaps:
+                print ("ERROR :: Figure.set_cmap() :: Unknown cmap '{0}', not found in 'default_matplotlib_cmaps'.".format(cmap))
+                return
+        else:
+            print ("ERROR :: Figure.set_cmap() :: Unknown cmap type '{0}'.".format(type(cmap)))
+            return
+
+        # assign color map
+        self.cmap = cmap
+        # update the color dictionary
+        self.update_colors()
+
+    def update_colors (self):
+        
+        if not self.has_cmap():
+            # if a color map has not been assigned, skip this routine
+            return
+
+        if not self.has_ivals():
+            # if isolation values have not been assigned, skip this routine
+            return
+
+        # loop through each ival, assign a color
+        self.color_dict = {} # empty dictionary
+        if self.cmap in default_matplotlib_cmaps:
+            if self.cmap in discrete_matplotlib_cmaps:
+                # the color map is discrete
+                # the colors are sequentially spaced
+                colormap = mcmaps[self.cmap]
+                self.color_dict = {}
+                for i in range(len(self.get_unique_ivals())):
+                    self.color_dict.update({self.get_unique_ivals()[i]: colormap(i)})
             else:
-                return l
+                # the color map is continuous
+                # the colors are linearly spaced
+                colormap = mcmaps[self.cmap]
+                cmap_ivals = np.linspace(0.,1.,len(self.get_unique_ivals()), endpoint = True)
+                for i in range(len(self.get_unique_ivals())):
+                    self.color_dict.update({self.get_unique_ivals()[i]: colormap(cmap_ivals[i])})
         else:
-            # otherwise, if an icol has not been specified, return a list with empty string
-            return [""]
+            # if the colormap is not defined in matplotlib, cannot parse colors
+            print("ERROR :: Figure.update_colors() :: Unable to parse colors from colormap of type '{0}'.".format(type(self.cmap)))
 
-    # method that returns list of xvalues
-    """ returns list of xvals contained within xcol. if ival is specified, xvals returned are those which share the same ival in icol (if any). """
-    def get_xval_list (self, ival = None):
-        if ival is None:
-            # return all xvals as a list
-            return self.df[self.xcol].to_list()
-        else:
-            # return xvals which share the same ival (if any)
-            tmpdf = self.df[self.df[self.icol] == ival]
-            return tmpdf[self.xcol].to_list()
+        # print(self.color_dict)
+        # self.color_dict = None
 
-    # method that returns list of yvalues
-    """ returns list of yvals contained within ycol. if ival is specified, yvals returned are those which share the same ival in icol (if any)."""
-    def get_yval_list (self, ival = None):
+    def add_color (self):
+        pass
+
+    def get_color (self, ival = None):
+
         if ival is None:
-            # return all yvals as a list
-            return self.df[self.ycol].to_list()
+            # if ival is not specified, return empty color
+            return None
+        elif ival not in self.get_unique_ivals():
+            # if ival is not in the list
+            print("ERROR :: Figure.get_color() :: ival '{0}' does not exist, or ivals have not been assigned.")
+            return None
         else:
-            # return yvales which share the same ival (if any)
-            tmpdf = self.df[self.df[self.icol] == ival]
-            return tmpdf[self.ycol].to_list()
+            if self.has_cmap():
+                return self.color_dict[ival]
+            else:
+                # a color map has not been assigned, return None quitely
+                return None
 
     ## TITLE ##
 
