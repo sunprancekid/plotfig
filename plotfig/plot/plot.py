@@ -168,6 +168,13 @@ def gen_plot (fig = None, linewidth = default_plot_linewidth, markersize = defau
     plt.ylabel(fig.get_yaxis_label().get_label(), fontsize = fig.get_yaxis_label().get_size())
     # add the legend
     plt.legend(handles = leg, loc = legendloc) # TODO increase size of legend labels
+    
+    # add logscale
+    if fig.xaxis_is_logscale():
+        plt.xscale(fig.get_xaxis_scale(), base = fig.get_xaxis_scale_base())
+    if fig.yaxis_is_logscale():
+        plt.yscale(fig.get_yaxis_scale(), base = fig.get_yaxis_scale_base())
+
     # adjust major and minor ticks for x and y axis
     if fig.yaxis_has_major_ticks():
         plt.yticks(fig.get_yaxis_major_ticks())
@@ -178,12 +185,6 @@ def gen_plot (fig = None, linewidth = default_plot_linewidth, markersize = defau
         plt.xticks(fig.get_xaxis_major_ticks())
         if fig.xaxis_has_minor_ticks():
             plt.xticks(fig.get_xaxis_minor_ticks(), minor = True)
-
-    # add logscale
-    if fig.xaxis_is_logscale():
-        plt.xscale(fig.get_xaxis_scale(), base = fig.get_xaxis_scale_base())
-    if fig.yaxis_is_logscale():
-        plt.yscale(fig.get_yaxis_scale(), base = fig.get_yaxis_scale_base())
 
     if save:
         plt.savefig(fig.get_saveas(), dpi = fig.get_dpi(), bbox_inches='tight')

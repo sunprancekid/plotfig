@@ -876,7 +876,7 @@ class Axis (object):
             self.set_minimum(minval)
         elif not has_minval and self.has_minimum():
             # if a minimum has not been provided but the axis already has a value, use that one
-            minval = self.get_minimium()
+            minval = self.get_minimum()
         else:
             # unable to parse minimum value, throw error
             print("ERROR :: Axis.set_major_ticks() :: 'minval' not specified, must be float or integer.")
@@ -910,8 +910,16 @@ class Axis (object):
         self.set_limits(min_val = minval , max_val = maxval)
         self.pad_limits(pad)
         # use the min and max values assigned to the axis to create the ticks
-        step = (maxval - minval) / (nticks - 1)
-        # self.major_ticks = np.arange(minval, maxval + step, step)
+        if self.is_linearscale():
+            step = (maxval - minval) / (nticks - 1)
+            self.major_ticks = np.arange(minval, maxval + step, step)
+        else:
+            step = (lin2log(maxval, self.get_logscale_base() - lin2log(minval, self.get_logscale_base()))) / (nticks)
+            tick_temp = np.arange(lin2log(minval, self.get_logscale_base()), lin2log(maxval, self.get_logscale_base()), step)
+            for index, value in np.ndenumerate(tick_temp):
+                tick_temp[index] = log2lin(value, self.get_logscale_base())
+            self.major_ticks = tick_temp
+            print (tick_temp)
 
     def get_major_ticks (self):
         """ returns axis major tick marks.
