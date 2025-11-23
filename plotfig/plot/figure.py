@@ -262,6 +262,8 @@ class Figure (object):
 
             # update dataframe
             self.df = pd.concat([self.df, pd.DataFrame(df_dict)], ignore_index = True)
+            self.set_xaxis_limits()
+            self.set_yaxis_limits()
             self.reset_markers()
             self.reset_labels()
             self.reset_colors()
@@ -308,6 +310,8 @@ class Figure (object):
             df_dict.update({'icol': [label for _ in range(len(df_dict[xcol]))]})
 
         self.df = pd.DataFrame(df_dict)
+        self.set_xaxis_limits()
+        self.set_yaxis_limits()
         self.reset_markers()
         self.reset_labels()
         self.reset_colors()
@@ -600,7 +604,7 @@ class Figure (object):
 
     # sets the minimum and maximum limits for the xaxis
     """ method used to assign the xaxis minimum and maximum values at the same time. """
-    def set_xaxis_limits (self, min_val = None, max_val = None):
+    def set_xaxis_limits (self, min_val = None, max_val = None, padval = None):
 
         # if xaxis data has already been assigned to the figure object
         if self.xcol is not None:
@@ -612,6 +616,8 @@ class Figure (object):
 
         # assign the minimum and maximum values
         self.xaxis.set_limits(min_val, max_val)
+        # pad limits
+        self.xaxis.pad_limits(padval)
 
     # sets the minimum value for the xaxis limit
     """ method used the assign the xaxis minimum limit as double. """
@@ -642,6 +648,8 @@ class Figure (object):
             self.xaxis.set_scale(s = scale_linear)
         elif log:
             self.xaxis.set_scale(s = scale_log, b = logscale_base)
+            # reset limits with padding
+            self.set_xaxis_limits(padval = 0.05)
 
     # check if xaxis is logscale
     """ method returns boolean determining if the xaxis is logscale or not. """
@@ -716,7 +724,7 @@ class Figure (object):
 
     # set the yaxis minimum and maximum values
     """ method that assigns minimum and maximum values to the yaxis limits. """
-    def set_yaxis_limits (self, min_val = None, max_val = None):
+    def set_yaxis_limits (self, min_val = None, max_val = None, padval = None):
 
         # if yaxis data has already been provided to the method
         if self.ycol is not None:
@@ -728,6 +736,8 @@ class Figure (object):
 
         # assign the minimum and maximum values
         self.yaxis.set_limits(min_val, max_val)
+        # pad limits
+        self.yaxis.pad_limits(padval)
 
     # set yaxis minimum limit
     """ method that assigns a double as the yaxis minimum limit. """
@@ -758,6 +768,8 @@ class Figure (object):
             self.yaxis.set_scale(s = scale_linear)
         elif log:
             self.yaxis.set_scale(s = scale_log, b = logscale_base)
+            # reset limits with padding
+            self.set_yaxis_limits(padval = 0.05)
 
     # check if yaxis is logscale
     """ method returns boolean determining if the yaxis is logscale or not. """

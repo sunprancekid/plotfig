@@ -47,10 +47,9 @@ if plot: # run plot example
 	fig.add_format("$K$ = {:.1e}")
 	# xaxis formatting
 	## TODO :: logscale formatting
-	##		- automatically set limits, mask negative data
+	##		- mask negative data?
 	## 		- set axis major and minor ticks for log vs. lin scale
 	fig.set_xaxis_label("Cyclic Period ($s$)")
-	fig.set_xaxis_limits() # automatically do this within logscale call
 	fig.set_xaxis_scale(log = True)
 	# yaxis formatting
 	fig.set_yaxis_label("Dissipated Energy per Cycle ($kJ$)")
@@ -82,15 +81,12 @@ if plot: # run plot example
 	fig.load_data(d = pd.DataFrame({'X': perm, 'Y': value, 'I': tag}), xcol = 'X', ycol = 'Y', icol = 'I')
 	# xaxis formatting
 	fig.set_xaxis_label('Model Permeability ($mm^4 / N \\cdot s$)')
-	fig.set_xaxis_limits()
 	fig.set_xaxis_scale(log = True)
 	# fig.set_xaxis_ticks()
 	fig.set_yaxis_label('Critical Period ($s$)')
-	fig.set_yaxis_limits()
 	fig.set_yaxis_scale(log = True) # order matters here
 	# fig.set_yaxis_ticks(minval = min(value), maxval = max(value))
 	fig.set_cmap('Set1')
-	print(fig.yaxis_is_linearscale())
 	gen_plot(fig, linewidth = 0, save = False)
 
 

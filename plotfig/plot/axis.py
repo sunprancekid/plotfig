@@ -525,6 +525,14 @@ class Axis (object):
 
         """
 
+        if padval is None:
+            # if no padding value was passed to the method, return
+            return
+        elif (not isinstance(padval, int)) and (not isinstance(padval, float)):
+            # unable to pad if value is not real numbered
+            print("ERROR :: Axis.pad_limits() :: unable to use 'padval', not real numbered integer or float types.")
+            return
+
         if self.is_linearscale():
             # pad the axis limits according to a logscale
             maxval = self.get_maximum()
