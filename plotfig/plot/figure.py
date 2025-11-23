@@ -47,6 +47,7 @@ default_number_minor_ticks = 4
 scale_linear = "linear"
 scale_log = "log"
 default_scale = scale_linear
+default_padding_value = 0.05
 
 ## corresponding to color maps
 default_matplotlib_cmaps = list(mcmaps)
@@ -262,8 +263,8 @@ class Figure (object):
 
             # update dataframe
             self.df = pd.concat([self.df, pd.DataFrame(df_dict)], ignore_index = True)
-            self.set_xaxis_limits()
-            self.set_yaxis_limits()
+            self.set_xaxis_limits(padval = default_padding_value)
+            self.set_yaxis_limits(padval = default_padding_value)
             self.reset_markers()
             self.reset_labels()
             self.reset_colors()
@@ -310,8 +311,8 @@ class Figure (object):
             df_dict.update({'icol': [label for _ in range(len(df_dict[xcol]))]})
 
         self.df = pd.DataFrame(df_dict)
-        self.set_xaxis_limits()
-        self.set_yaxis_limits()
+        self.set_xaxis_limits(padval = default_padding_value)
+        self.set_yaxis_limits(padval = default_padding_value)
         self.reset_markers()
         self.reset_labels()
         self.reset_colors()

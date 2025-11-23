@@ -53,6 +53,7 @@ if plot: # run plot example
 	fig.set_xaxis_scale(log = True)
 	# yaxis formatting
 	fig.set_yaxis_label("Dissipated Energy per Cycle ($kJ$)")
+	# fig.pad_xaxis_limits()
 	# add unique colors
 	fig.set_cmap('Set2')
 	# show graph
@@ -84,7 +85,7 @@ if plot: # run plot example
 	fig.set_xaxis_scale(log = True)
 	# fig.set_xaxis_ticks()
 	fig.set_yaxis_label('Critical Period ($s$)')
-	fig.set_yaxis_scale(log = True) # order matters here
+	fig.set_yaxis_scale(log = True)
 	# fig.set_yaxis_ticks(minval = min(value), maxval = max(value))
 	fig.set_cmap('Set1')
 	gen_plot(fig, linewidth = 0, save = False)
