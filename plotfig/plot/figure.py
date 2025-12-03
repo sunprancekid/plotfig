@@ -74,6 +74,8 @@ class Figure (object):
 
     Attributes:
     -----------
+    col_dict : # TODO :: add this
+    col_type_dict : # TODO :: add this
     df : DataFrame
     title : Label
     subtitle : Label

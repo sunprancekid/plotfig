@@ -88,7 +88,7 @@ if plot: # run plot example
 	fig.set_yaxis_scale(log = True)
 	# fig.set_yaxis_ticks(minval = min(value), maxval = max(value))
 	fig.set_cmap('Dark2')
-	gen_plot(fig, linewidth = 0, save = False)
+	gen_plot(fig, markersize = 8, linewidth = 0, save = False)
 
 
 ## TODO :: add bar chart example
