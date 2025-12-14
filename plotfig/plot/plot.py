@@ -55,11 +55,11 @@ def gen_scatter (fig = None, markersize = default_scatter_markersize, legendloc 
     if fig.has_ivals():
         # if the figure has unique isolated values
         for i in fig.get_unique_ivals(rev = False):
-            sc = plt.scatter(fig.get_xval_list(i), fig.get_yval_list(i), marker = fig.get_marker(i), s = markersize) 
+            sc = plt.scatter(fig.get_xval_list(i), fig.get_yval_list(i), marker = fig.get_marker(i), s = markersize, c = fig.get_color(i)) 
             leg.append(mlines.Line2D([], [], marker = fig.get_marker(i), label = fig.get_label(i), color = sc.get_facecolors()[0].tolist(), ls = ''))
     else:
         # otherwise the figure does not have isolated values, so just create one plot
-        plt.scatter(fig.get_xval_list(), fig.get_yval_list(), marker = fig.get_marker(), s = markersize)
+        plt.scatter(fig.get_xval_list(), fig.get_yval_list(), marker = fig.get_marker(), s = markersize, c = fig.get_color())
 
     # add xaxis min and max, used min and max to plot fits
     xlim = plt.xlim(fig.get_xaxis_min(), fig.get_xaxis_max())

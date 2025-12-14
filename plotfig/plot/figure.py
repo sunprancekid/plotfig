@@ -493,9 +493,9 @@ class Figure (object):
             # if a color map has not been assigned, skip this routine
             return
 
-        if not self.has_ivals():
-            # if isolation values have not been assigned, skip this routine
-            return
+        # if not self.has_ivals():
+        #     # if isolation values have not been assigned, skip this routine
+        #     return
 
         # loop through each ival, assign a color
         self.color_dict = {} # empty dictionary
@@ -527,8 +527,8 @@ class Figure (object):
     def get_color (self, ival = None):
 
         if ival is None:
-            # if ival is not specified, return empty color
-            return None
+            # if ival is not specified, return the first color in the color map
+            return self.color_dict[""]
         elif ival not in self.get_unique_ivals():
             # if ival is not in the list
             print("ERROR :: Figure.get_color() :: ival '{0}' does not exist, or ivals have not been assigned.")
@@ -608,6 +608,12 @@ class Figure (object):
     # sets the minimum and maximum limits for the xaxis
     """ method used to assign the xaxis minimum and maximum values at the same time. """
     def set_xaxis_limits (self, min_val = None, max_val = None, padval = None):
+
+        # check the data type corresponding to the x-axis column
+        # cannot set minimum or maximum for non-numerical formats
+        if (self.df[self.xcol].dtype != float) and (self.df[self.xcol].dtype != int):
+            print("ERROR :: Figure.set_xaxis_limits() :: cannot set limits for dtype '{0}'".format(self.df[self.xcol].dtype))
+            return
 
         # if xaxis data has already been assigned to the figure object
         if self.xcol is not None:
@@ -728,6 +734,11 @@ class Figure (object):
     # set the yaxis minimum and maximum values
     """ method that assigns minimum and maximum values to the yaxis limits. """
     def set_yaxis_limits (self, min_val = None, max_val = None, padval = None):
+
+        # check ycol dtype for non-numerical
+        if (self.df[self.ycol].dtype != float) and (self.df[self.ycol].dtype != int):
+            # let the user know
+            print("ERROR :: Figure.set_yaxis_limits() :: unable to set limits for ycol with non-numerical dtype '{0}'".format(self.df[self.ycol].dtype))
 
         # if yaxis data has already been provided to the method
         if self.ycol is not None:
