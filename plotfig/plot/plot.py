@@ -270,9 +270,7 @@ def gen_pie_chart (fig = None, labels = None, legend = True, explode = default_e
     plt.close()
 
 """ method for generating bar chart """
-def gen_bar_chart (fig = None, icol = None, xlabels = None, stack = True, show = True, save = False):
-
-    ## TODO allow the user to specify the dimensions of the chart (length and width)
+def gen_bar_chart (fig = None, xlabel_dict = None, stack = True, show = True, save = False):
 
     # check for the figure
     if fig is None:
@@ -280,24 +278,18 @@ def gen_bar_chart (fig = None, icol = None, xlabels = None, stack = True, show =
 
     # get data and establish labels
     x = fig.get_xval_list()
-    y = fig.get_yval_list()
-    if xlabels is None:
-        # if no labels were specified by the user, use the unique x_col values
-        xlabels = list(dict.fromkeys(x))
+    if xlabel_dict is None:
+        # if no labels were specified by the user
+        # the keys are the unique xcol values
+        xkeys = list(dict.fromkeys(x))
+        xlabels = xkeys
         # otherwise use the user specified date
-
-    # accumulate data
-    s = [0.] * len(xlabels) # amount organized by each catagorey
-    t = 0. # total amount 
-    for i in range(len(y)):
-        if x[i] not in xlabels:
-            continue
-        # s[xlabels.index(x[i])] += abs(y[i])
-        s[xlabels.index(x[i])] += y[i]
-        # t += abs(y[i])
-        t += y[i]
-
-    # TODO sort values extra by an icol
+    else:
+        xkeys = list(xlabel_dict.keys())
+        # generate labels
+        xlabels = []
+        for i in range(len(xkeys)):
+            xlabels.append(xlabel_dict[xkeys[i]])
 
     # plot
     f = plt.figure(figsize=(8,6))
@@ -305,25 +297,44 @@ def gen_bar_chart (fig = None, icol = None, xlabels = None, stack = True, show =
 
     if fig.has_ivals():
 
-        # isolation values have been specified for the figure
-        # determine if the bars should be placed next to each other, or stacked
+        ## accumulate data according to each x- and i-val
+        # multi-dimensional array corresponding to the height of each layer
+        # after accumulation
+        b = [[0.] * len(xkeys) for i in range(len(fig.get_unique_ivals()) + 1)]
+        for i in fig.get_unique_ivals():
+            # sum corresponding to each x- and i-val
+            s = [0.] * len(xkeys) # amount organized by each catagorey
+            t = 0. # sum of all values
+            x = fig.get_xval_list(i)
+            y = fig.get_yval_list(i)
+            for j in range(len(x)):
+                if x[j] not in xkeys:
+                    continue
+                s[xkeys.index(x[j])] += y[j]
+                b[fig.get_unique_ivals().index(i) + 1][xkeys.index(x[j])] += y[j]
+                t += y[j]
 
-        if not stack:
-            pass
-
-            # if the bars are not being stack on top of each other ..
-            # they are place next to one another
-
-        else:
-            pass
-
-            # the catagories should be stacked on top of one another
+            ## check
+            for j in range(len(s)):
+                print(i, xkeys[j], s[j], b[fig.get_unique_ivals().index(i)])
+            # plot with shifted base
+            ax1.bar(xlabels, s, bottom = b[fig.get_unique_ivals().index(i)], color = fig.get_color(i), edgecolor = default_edgecolor, label = i)
 
     else:
         
+        # accumulate data
+        s = [0.] * len(xkeys) # amount organized by each catagorey
+        t = 0. # total amount 
+        x = fig.get_xval_list()
+        y = fig.get_yval_list()
+        for i in range(len(y)):
+            if x[i] not in xkeys:
+                continue
+            s[xkeys.index(x[i])] += y[i]
+            t += y[i]
 
         # isolation values have not been specified
-        ax1.bar(xlabels, s, edgecolor = default_edgecolor)
+        ax1.bar(xlabels, s, color = fig.get_color(), edgecolor = default_edgecolor)
 
         # ax1.set_ylim(0., 5.)
         # ax1.tick_params(axis='both', which='major', labelsize=16)
@@ -347,6 +358,10 @@ def gen_bar_chart (fig = None, icol = None, xlabels = None, stack = True, show =
         plt.title(fig.get_subtitle_label().get_label(), fontsize = fig.get_subtitle_label().get_size())
     plt.xlabel(fig.get_xaxis_label().get_label(), fontsize = fig.get_xaxis_label().get_size())
     plt.ylabel(fig.get_yaxis_label().get_label(), fontsize = fig.get_yaxis_label().get_size())
+
+    # add legend
+    if fig.has_ivals():
+        ax1.legend()
 
     # assign yaxis ticks
     if fig.get_yaxis_major_ticks() is not None:

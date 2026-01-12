@@ -67,6 +67,8 @@ discrete_matplotlib_cmaps = ['Pastel1', 'Pastel2', 'Paired', 'Accent', 'Dark2',
 ## CLASSES ##
 #############
 
+## TODO :: new columns, x1, x2, ..., y1, y2, ..., i1, i2
+
 ## Figure class
 class Figure (object):
 
@@ -384,9 +386,9 @@ class Figure (object):
             # if an icol has been specified return all unique items
             l = self.df[self.icol].unique()
             if rev:
-                return np.flip(l)
+                return list(np.flip(l))
             else:
-                return l
+                return list(l)
         else:
             # otherwise, if an icol has not been specified, return a list with empty string
             return [""]
@@ -525,6 +527,9 @@ class Figure (object):
         pass
 
     def get_color (self, ival = None):
+
+        if not self.has_cmap():
+            return None
 
         if ival is None:
             # if ival is not specified, return the first color in the color map
