@@ -13,8 +13,10 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import matplotlib.legend as mlegend
+from matplotlib import colormaps as mcmaps
 # local
 from plot.figure import Figure
+from plot.figure import discrete_matplotlib_cmaps, default_matplotlib_cmaps
 
 
 ################
@@ -132,6 +134,7 @@ def gen_plot (fig = None, linewidth = default_plot_linewidth, markersize = defau
         n = len(fig.get_unique_ivals())
         # if the figure has unique isolated values
         for i in fig.get_unique_ivals(rev = False):
+            print(i)
             line = plt.plot(fig.get_xval_list(i), fig.get_yval_list(i), linewidth = linewidth, marker = fig.get_marker(i), markersize = markersize, zorder = n, c = fig.get_color(i)) 
             leg.append(mlines.Line2D([], [], marker = fig.get_marker(i), ls = line[-1].get_ls(), label = fig.get_label(i), color = line[-1].get_color()))
             n -= 1
@@ -194,7 +197,7 @@ def gen_plot (fig = None, linewidth = default_plot_linewidth, markersize = defau
     plt.close()
 
 # generate pie chart
-def gen_pie_chart (fig = None, labels = None, legend = True, explode = default_explode, add_amount = False, curr = None, show = True, save = True):
+def gen_pie_chart (fig = None, labels = None, legend = True, explode = default_explode, add_amount = False, curr = None, cmap = default_colormap, show = True, save = True):
 
     # check for fig
     if fig is None:
@@ -242,6 +245,23 @@ def gen_pie_chart (fig = None, labels = None, legend = True, explode = default_e
         explode_array = [default_explode] * len(s)
         # print(explode_array)
 
+    ## build the colormap array
+    if cmap in discrete_matplotlib_cmaps:
+        # build discrete list of colors
+        c = []
+        colormap = mcmaps[cmap]
+        for i in range(len(s)):
+            c.append(colormap(i))
+    elif cmap in default_matplotlib_cmaps:
+        # build continuous list of colors
+        c = []
+        colormap = mcmaps[cmap]
+        cmap_ivals = np.linspace(0.,1.,len(s), endpoint = True)
+        for i in range(len(s)):
+            c.append(colormap(cmap_ivals[i]))
+    else:
+        c = None
+
     # add figure labels
     f = plt.figure()
     ax = plt.subplot(111)
@@ -256,18 +276,19 @@ def gen_pie_chart (fig = None, labels = None, legend = True, explode = default_e
         ax.set_title(fig.get_subtitle_label().get_label(), fontsize = fig.get_title_label().get_size())
 
     # plot
+    wedgeprops={"edgecolor":"k",'linewidth': 1.25, 'linestyle': '-', 'antialiased': True}
     if legend:
-        ax.pie(s, explode = explode_array)
+        ax.pie(s, explode = explode_array, colors = c, wedgeprops = wedgeprops)
         ax.legend(labels = labels, bbox_to_anchor=(0.075, 0.75))
     else:
-        ax.pie(s, labels = labels, explode = explode_array)
+        ax.pie(s, labels = labels, explode = explode_array, colors = c, wedgeprops = wedgeprops)
     # save / show
     if save:
         plt.savefig(fig.get_saveas(), dpi = fig.get_dpi()) # bbox_inches='tight'
     if show:
         plt.show()
     # close
-    plt.close()
+    plt.close('all')
 
 """ method for generating bar chart """
 def gen_bar_chart (fig = None, xlabel_dict = None, stack = True, show = True, save = False):
@@ -307,6 +328,9 @@ def gen_bar_chart (fig = None, xlabel_dict = None, stack = True, show = True, sa
             t = 0. # sum of all values
             x = fig.get_xval_list(i)
             y = fig.get_yval_list(i)
+            # cascade the base value to the next level
+            for j in range(len(xkeys)):
+                b[fig.get_unique_ivals().index(i) + 1][j] = b[fig.get_unique_ivals().index(i)][j]
             for j in range(len(x)):
                 if x[j] not in xkeys:
                     continue
@@ -351,7 +375,7 @@ def gen_bar_chart (fig = None, xlabel_dict = None, stack = True, show = True, sa
     ax1.spines[['right', 'top']].set_visible(False)
 
     # set y-axis min and max, labels
-    ylim = plt.ylim(fig.get_yaxis_min(), fig.get_yaxis_max())
+    # ylim = plt.ylim(fig.get_yaxis_min(), fig.get_yaxis_max())
     if fig.get_title_label() is not None:
         plt.suptitle(fig.get_title_label().get_label(), fontsize = fig.get_title_label().get_size())
     if fig.get_subtitle_label() is not None:
@@ -375,7 +399,7 @@ def gen_bar_chart (fig = None, xlabel_dict = None, stack = True, show = True, sa
     if show:
         plt.show()
 
-    plt.close()
+    plt.close(f)
 
 
 
