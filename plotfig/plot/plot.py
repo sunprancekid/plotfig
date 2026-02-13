@@ -48,7 +48,7 @@ def gen_scatter (fig = None, markersize = default_scatter_markersize, legendloc 
 
     # check that figure exists
     if fig is None:
-        print("ERROR :: scatter :: must specify 'fig'.")
+        ("ERROR :: scatter :: must specify 'fig'.")
         exit()
 
     # establish scatter plot
@@ -134,7 +134,7 @@ def gen_plot (fig = None, linewidth = default_plot_linewidth, markersize = defau
         n = len(fig.get_unique_ivals())
         # if the figure has unique isolated values
         for i in fig.get_unique_ivals(rev = False):
-            print(i)
+            # print(i)
             line = plt.plot(fig.get_xval_list(i), fig.get_yval_list(i), linewidth = linewidth, marker = fig.get_marker(i), markersize = markersize, zorder = n, c = fig.get_color(i)) 
             leg.append(mlines.Line2D([], [], marker = fig.get_marker(i), ls = line[-1].get_ls(), label = fig.get_label(i), color = line[-1].get_color()))
             n -= 1
@@ -339,8 +339,8 @@ def gen_bar_chart (fig = None, xlabel_dict = None, stack = True, show = True, sa
                 t += y[j]
 
             ## check
-            for j in range(len(s)):
-                print(i, xkeys[j], s[j], b[fig.get_unique_ivals().index(i)])
+            # for j in range(len(s)):
+            #     print(i, xkeys[j], s[j], b[fig.get_unique_ivals().index(i)])
             # plot with shifted base
             ax1.bar(xlabels, s, bottom = b[fig.get_unique_ivals().index(i)], color = fig.get_color(i), edgecolor = default_edgecolor, label = i)
 
