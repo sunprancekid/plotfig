@@ -67,7 +67,12 @@ discrete_matplotlib_cmaps = ['Pastel1', 'Pastel2', 'Paired', 'Accent', 'Dark2',
 ## CLASSES ##
 #############
 
-## TODO :: new columns, x1, x2, ..., y1, y2, ..., i1, i2
+## TODO :: docstring figure
+## TODO :: update data handling methods, add for loading lists, appending, (more diversity)
+## TODO :: new columns, x1, x2, ..., y1, y2, ..., i1, i2, ...., c1, c2, ....
+##          - I see these being a set of accepted axis that can be stored and accessed
+##          - the challenging part will be loading and handling data sets with different arrays
+## TODO :: create color and scheme classes 
 
 ## Figure class
 class Figure (object):
