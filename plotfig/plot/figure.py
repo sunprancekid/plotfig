@@ -122,7 +122,12 @@ class Figure (object):
         assigns dpi used for generating figure.
     get_dpi:
         returns dpi assigned for generating figure.
-
+    set_saveas:
+        assigns filename and location when saving figure.
+    get_saveas:
+        returns save path, including directory, filename, and filetype.
+    save_data:
+        saves data used for generate figure as csv in save directory.
     """
 
     """ standard initialization routine for Figure object. """
@@ -208,37 +213,6 @@ class Figure (object):
         # adjust dpi
         self.set_dpi (d = pubdefault_dpi)
 
-    """ assign location, name, and type of save file. """
-    def set_saveas(self, savedir = default_file_location, filename = default_file_name, filetype = default_file_type):
-
-        # check the save directory passed to the method
-        if not os.path.exists(savedir):
-            # if the directory does not exist, make it
-            os.makedirs(savedir)
-            self.savedir = savedir
-        else:
-            self.savedir = savedir
-
-        # check the filename passed to the method
-        if type(filename) is not str:
-            self.filename = default_file_name
-        else:
-            self.filename = filename
-
-        # check the filetype passed to the method
-        if filetype not in accepted_filetypes:
-            self.filetype = default_file_type
-        else:
-            self.filetype = filetype
-
-    """ return path to location of saved file. """
-    def get_saveas(self):
-        saveas = self.savedir + self.filename + self.filetype
-        return saveas
-
-    """ save data frame data to directory and with name associated with object."""
-    def save_data(self):
-        self.df.to_csv(self.savedir + self.filename + ".csv", index = False)
 
     ## DATA HANDLING ##
 
@@ -985,6 +959,73 @@ class Figure (object):
             dpi used for generating figure.
         """
         return self.dpi
+
+    ## IO ##
+
+    def set_saveas(self, savedir = default_file_location, filename = default_file_name, filetype = default_file_type):
+        """ assigns filename and location when saving figure.
+
+        Arguments:
+        ----------
+        savedir : str
+            path to save directory.
+        filename : str
+            name of file without extension.
+        filetype : str
+            must be within 'accepted_filetypes'.
+
+        Returns:
+        --------
+        None
+        """
+
+        # check the save directory passed to the method
+        if not os.path.exists(savedir):
+            # if the directory does not exist, make it
+            os.makedirs(savedir)
+            self.savedir = savedir
+        else:
+            self.savedir = savedir
+
+        # check the filename passed to the method
+        if type(filename) is not str:
+            self.filename = default_file_name
+        else:
+            self.filename = filename
+
+        # check the filetype passed to the method
+        if filetype not in accepted_filetypes:
+            self.filetype = default_file_type
+        else:
+            self.filetype = filetype
+
+    def get_saveas(self):
+        """ returns save path, including directory, filename, and filetype.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        str
+            complete path to save file.
+        """
+        saveas = self.savedir + self.filename + self.filetype
+        return saveas
+
+    def save_data(self):
+        """ saves data used for generate figure as csv in save directory.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        None
+        """
+        self.df.to_csv(self.savedir + self.filename + ".csv", index = False)
 
     ## LINEAR OR LOG SCALE ##
 
