@@ -213,6 +213,8 @@ class Figure (object):
 
     ## DATA HANDLING ##
 
+    ## GOAL :: append in multiple method calls, with differing structures
+
     # method used to initialize data stored withing figure object
     """ initializes data stored withing figure object. dataframe is removed, x, y, c, and i columns are reset. """
     def reset_data (self):
@@ -397,6 +399,8 @@ class Figure (object):
 
     ## MARKERS ## 
 
+    ## GOAL :: encapsulate marker calls within scheme
+
     # initialize set of random set of markers that can be used for each unique ival in icol
     """ method generates a random set of markers than can be used with matplotlib. """
     def reset_markers(self, markerset = None):
@@ -549,6 +553,8 @@ class Figure (object):
 
 
     ## AXES ##
+
+    ## GOAL :: reduce number of methods needed for handling axes
 
     def reset_axes (self): 
         """ resets all axes assigned to Figure.
