@@ -603,8 +603,9 @@ class Figure (object):
         --------
         None
         """
+        ## TODO :: rename akey
         # check that the axes already exists
-        if not self.has_axis(axis):
+        if not self.has_axis(axis): return
 
 
     ## TITLE ##
