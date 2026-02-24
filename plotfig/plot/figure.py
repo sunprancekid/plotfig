@@ -14,6 +14,7 @@ import itertools # used for iterating over markers
 from matplotlib import colormaps as mcmaps
 # local
 from plot.axis import Label, Axis
+from plot.color import Scheme, Color
 
 
 ################
@@ -136,21 +137,16 @@ class Figure (object):
         ## related to figure formatting, labelling
         self.set_title_label()
         self.set_subtitle_label()
-        ## xaxis call (would it be possible to encaspulte all axis activities within one set of methods?)
-        self.reset_xaxis()
-        ## yaxis call
-        self.reset_yaxis()
+        self.reset_axes()
         ## color bar call
         # self.set_cbar_label()
         # self.set_cscheme()
         # self.set_max_cbar()
         # self.set_min_cbar()
-        ## other
+        ## io
         self.set_linscale()
         self.set_dpi()
         self.set_saveas()
-        # self.set_file_name() # TODO check file type
-        # self.set_file_location() # TODO check that the location exists
 
         ## related to data and specification
         self.reset_data()
@@ -552,6 +548,20 @@ class Figure (object):
 
 
     ## AXES ##
+
+    def reset_axes (self): 
+        """ resets all axes assigned to Figure.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        None
+        """
+        self.reset_xaxis()
+        self.reset_yaxis()
 
     ## TITLE ##
 
