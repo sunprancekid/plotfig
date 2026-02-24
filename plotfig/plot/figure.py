@@ -84,11 +84,17 @@ class Figure (object):
 
     Attributes:
     -----------
+    axes_dict : Dict[Axis]
+        dictionary containing all figure axes.
+    title_label : Label
+        string and font size used for figure title.
+    subtitle_label : Label
+        string and font size used for figure title.
+    dpi : int
+        dpi assigned to figure
     col_dict : # TODO :: add this
     col_type_dict : # TODO :: add this
     df : DataFrame
-    title : Label
-    subtitle : Label
     xaxis : Axis
     yaxis : Axis
     marker_dict : 
@@ -96,7 +102,26 @@ class Figure (object):
 
     Methods:
     --------
-    
+    set_title_label:
+        assign title label string and size.
+    get_title_label:
+        returns title label.
+    get_title_label_str:
+        returns the string representation of title label.
+    has_title_label:
+        determines if string has been assigned to title label.
+    set_subtitle_label:
+        assign subtitle label string and size.
+    get_subtitle_label:
+        returns subtitle label.
+    get_subtitle_label_str:
+        return string representation of subtitle lable.
+    has_subtitle_label:
+        determines if string has been assigned to subtitle label.
+    set_dpi:
+        assigns dpi used for generating figure.
+    get_dpi:
+        returns dpi assigned for generating figure.
 
     """
 
@@ -214,8 +239,6 @@ class Figure (object):
     """ save data frame data to directory and with name associated with object."""
     def save_data(self):
         self.df.to_csv(self.savedir + self.filename + ".csv", index = False)
-
-    ## GETTERS AND SETTERS ##
 
     ## DATA HANDLING ##
 
@@ -553,50 +576,130 @@ class Figure (object):
                 # a color map has not been assigned, return None quitely
                 return None
 
+
+    ## AXES ##
+
     ## TITLE ##
 
-    # sets the title label
-    """ method for setting Figure title label. """
     def set_title_label(self, l = default_title_label, s = None):
+        """ assign title label string and size.
+
+        Arguments:
+        ----------
+        l : str
+            figure title.
+        s : int
+            font size used for title label.
+
+        Returns:
+        --------
+        None
+        """
         self.title_label = Label (l, s)
 
-    # gets the title label as Label object
-    """ method for returning Figure title as Label object. """
     def get_title_label (self):
+        """ returns title label.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        Label
+            string and font size used for figure title
+        """
         return self.title_label
 
-    # gets the title label as string
-    """ method for returning the Figure title as string. """
     def get_title_label_str (self):
+        """ returns the string representation of title label.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        str
+            title label state as string.
+        """
         return str(self.title_label)
 
-    # determines if title string is empty
-    """ method for check if title label is empty by checking if the string assinged to the label is empty. """
     def has_title_label (self):
-        return self.title_label.get_label()
+        """ determines if string has been assigned to label.
+
+        Label object returns empty string if unassigned, which is evaluated
+        to be 'False' in the boolean context.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        bool
+            'True' title label has non-empty string, else 'False'.
+        """
+        return bool(self.title_label.get_label())
 
     ## SUBTITLE ##
 
-    # sets the subtitle label
-    """ method for setting Figure subtitle label. """
     def set_subtitle_label (self, l = default_subtitle_label, s = None):
+        """ assign subtitle label string and font size.
+
+        Arguments:
+        ----------
+        l : str (optional, default is 'default_subtitle_label')
+            string assigned to subtitle.
+        s : int (optional, default is 'None')
+            font size assigned to subtitle.
+
+        Returns:
+        --------
+        None
+        """
         self.subtitle_label = Label (l , s)
 
-    # gets the subtitle label as Label object
-    """ method for getting the Figure subtitle label as Label object. """
     def get_subtitle_label (self):
+        """ returns subtitle string and font size as Label.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        Label
+            string and font size assigned to subtitle label.
+        """
         return self.subtitle_label
 
-    # get the subtitle label as string
-    """ method for getting the Figure subtitle label as string. """
     def get_subtitle_label_str (self):
+        """ returns string representation of subtitle label.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        str
+            subtitle label state as string."""
         return str(self.subtitle_label)
 
-    # checks if the subtitle label is empty
-    """ method that check if the subtitle label is empty by determining if an empty string is assigned to the label. """
     def has_subtitle_label (self):
-        # if returns empty string, is evaluated as false in boolean context
-        return self.subtitle_label.get_label()
+        """ returns boolean determining if label has been assigned to subtitle.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        bool
+            'True' if subtitle label has non-emptry string, else 'False'.
+        """
+        return bool(self.subtitle_label.get_label())
 
     ## XAXIS ##
 
@@ -849,19 +952,38 @@ class Figure (object):
 
     ## DPI ##
 
-    # sets the figure dpi
-    """ sets the dpi for the figure. """
     def set_dpi (self, d = None):
-        # check that the value passed to the method is an integer greater than the minimum
+        """ assign dpi used for figure.
+
+        If unassigned, 'default_dpi' is used.
+
+        Arguments:
+        ----------
+        d : int
+            dpi used when generating figure with plot.
+
+        Returns:
+        --------
+        None
+        """
         if d is None or not isinstance(d, int):
             self.dpi = default_dpi
         else:
             if d < minimum_dpi:
                 self.dpi = minimum_dpi
 
-    # gets the figure dpi
-    """ return the figure dpi (dots per inch). """
     def get_dpi (self):
+        """ returns the dpi assigned to the figure.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        int
+            dpi used for generating figure.
+        """
         return self.dpi
 
     ## LINEAR OR LOG SCALE ##
