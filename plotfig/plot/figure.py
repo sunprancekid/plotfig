@@ -25,6 +25,7 @@ from plot.color import Scheme, Color
 NONZERO_EXITCODE = 120
 
 ## constants, defaults for Figure class
+accepted_axes = ['x', 'y', 'y2', 'c', 'l']
 default_title_label = None
 default_subtitle_label = None
 default_xaxis_label = None
@@ -560,8 +561,45 @@ class Figure (object):
         --------
         None
         """
+        self.dict_axes = {}
+        # from previous implementation
         self.reset_xaxis()
         self.reset_yaxis()
+
+    def has_axis(self, axis):
+        """ checks if axis key exists in axes dictionary.
+
+        Arguments:
+        ----------
+        axis : str
+            key to check for in dictionary
+
+        Returns:
+        --------
+        bool
+            boolean that determines if the axis is in the dictionary.
+        """
+        return (axis in self.dict_axes.keys())
+
+    def set_axis_label (self, axis = None):
+        """ assigns label to axes if it exists.
+
+        Arguments:
+        ----------
+        axes : str
+            axis key which already exists in dict.
+        l : str
+            string assigned to axis label.
+        s : int
+            font size assigned to axis label.
+
+        Returns:
+        --------
+        None
+        """
+        # check that the axes already exists
+        if not self.has_axis(axis):
+
 
     ## TITLE ##
 
