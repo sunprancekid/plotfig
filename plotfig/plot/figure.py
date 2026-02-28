@@ -568,11 +568,13 @@ class Figure (object):
         None
         """
         self.dict_axes = {}
-        # from previous implementation
+        # TODO :: only initialize axis when data is added
+        self.dict_axes.update({'y': Axis(), 'x': Axis()})
+        # from previous implementation, depricate
         self.reset_xaxis()
         self.reset_yaxis()
 
-    def has_axis(self, axis):
+    def has_axis(self, akey):
         """ checks if axis key exists in axes dictionary.
 
         Arguments:
@@ -585,15 +587,15 @@ class Figure (object):
         bool
             boolean that determines if the axis is in the dictionary.
         """
-        return (axis in self.dict_axes.keys())
+        return (akey in self.dict_axes.keys())
 
-    def set_axis_label (self, axis = None):
+    def set_axis_label (self, akey = None, l = None, s = None):
         """ assigns label to axes if it exists.
 
         Arguments:
         ----------
-        axes : str
-            axis key which already exists in dict.
+        akey : str
+            axis key which already exists in axes dict.
         l : str
             string assigned to axis label.
         s : int
@@ -603,9 +605,64 @@ class Figure (object):
         --------
         None
         """
-        ## TODO :: rename akey
         # check that the axes already exists
-        if not self.has_axis(axis): return
+        if not self.has_axis(akey): return
+        # assign label and font size to specified axis
+        self.dict_axes[akey].set_label(l, s)
+
+    def get_axis_label (self, akey = None):
+        """ get the label corresponding to the specified axis.
+
+        Parameters:
+        -----------
+        akey : str
+            corresponds to axis in 'axes_dict'.
+
+        Returns:
+        --------
+        Label
+            label assigned to axes.
+        """
+        # check that the axes already exists in the dictionary
+        if not self.has_axis(akey): return
+        # return the label corresponding to the axis
+        return self.dict_axes[akey].get_label()
+
+    def get_axis_label_str (self, akey = None):
+        """ return string representation of axis label.
+
+        Parameters:
+        -----------
+        akey : str
+            corresponds to axis in 'axes_dict'
+
+        Returns:
+        --------
+        str
+            string representation of label.
+        """
+        # check that the axis exists in the dictionary
+        if not self.has_axis(akey): return
+        # return the label corresponding to the axis as a string
+        return str(self.dict_axes[akey].get_label())
+
+    def axis_has_label (self, akey = None):
+        """ determines if label has been assign to axis.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to axis in 'dict_axes'.
+
+        Returns:
+        --------
+        bool
+            'True' if axis has label, else 'False'.
+        """
+        # check that the axis exists in the axes dictionary
+        if not self.has_axis(akey): return
+        # return a boolean representation of the axis label status
+        return bool(self.dict_axes[akey].get_label())
 
 
     ## TITLE ##
