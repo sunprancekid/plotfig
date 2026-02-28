@@ -130,6 +130,19 @@ class Figure (object):
         returns save path, including directory, filename, and filetype.
     save_data:
         saves data used for generate figure as csv in save directory.
+    reset_axes:
+        resets all axes dictionary.
+    has_axis:
+        checks if axis key exists in axis dictionary.
+    set_axis_label:
+        assigns label to axis if it exists.
+    get_axis_label:
+        get the label corresponding to the specified axis.
+    get_axis_label_str:
+        return string representation of axis label.
+    axis_has_label:
+        determines if label has been assigned to axis.
+
     """
 
     """ standard initialization routine for Figure object. """
@@ -399,7 +412,7 @@ class Figure (object):
 
     ## MARKERS ## 
 
-    ## GOAL :: encapsulate marker calls within scheme
+    ## GOAL :: encapsulate marker calls within color and scheme
 
     # initialize set of random set of markers that can be used for each unique ival in icol
     """ method generates a random set of markers than can be used with matplotlib. """
@@ -556,6 +569,8 @@ class Figure (object):
 
     ## GOAL :: reduce number of methods needed for handling axes
 
+    ## AXES - LABEL ##
+
     def reset_axes (self): 
         """ resets all axes assigned to Figure.
 
@@ -663,6 +678,88 @@ class Figure (object):
         if not self.has_axis(akey): return
         # return a boolean representation of the axis label status
         return bool(self.dict_axes[akey].get_label())
+
+    ## AXES - LIMITS ## 
+
+    def set_axis_limits (self, akey = None, min_val = None, max_val = None):
+        """ assigns the mininmum and / or maximum values to the axis.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to axis in 'dict_axes'.
+        min_val : float or int (optional, default is 'None')
+            axis lower bounds when plotting.
+        max_val: float or int (optional, default is 'None')
+            axis upper bounds when plotting.
+
+        Returns:
+        --------
+        None
+        """
+        pass
+
+    def set_axis_minimum_value (self, akey = None, min_val = None):
+        """ assigns minimum value to axis.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to axis in 'dict_axes'.
+        min_val : float or int
+            axis lower bounds when plotting.
+
+        Returns:
+        --------
+        None
+        """
+        pass
+
+    def set_axis_maximum_value (self, akey = None, max_val = None):
+        """ assigns maximum value to axis.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to axis in 'dict_axes'.
+        max_val : float or int
+            axis upper bounds when plotting.
+
+        Returns:
+        --------
+        None
+        """
+        pass
+
+    def get_axis_minimum_value (self, akey = None):
+        """ get the lower bound value assigned to the axis limits.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to axis in 'dict_axes'.
+
+        Returns:
+        --------
+        float
+            lower bounds assigned to specified axis when plotting.
+        """
+        pass
+
+    def get_axis_maximum_value (self, akey = None):
+        """ get the upper bound value assigned to axis limits.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to axis in 'dict_axes'.
+
+        Returns:
+        --------
+        float
+            upper bounds assigned to specified axis when plotting.
+        """
+        pass
 
 
     ## TITLE ##
@@ -789,23 +886,17 @@ class Figure (object):
 
     ## XAXIS ##
 
-    # reset xaxis to empty Axis object with default attributes
     def reset_xaxis(self):
         self.xaxis = Axis()
 
-    # adjust xaxis label properties
     def set_xaxis_label (self, l = None, s = None):
-        self.xaxis.set_label(l, s)
+        self.set_axis_label('x', l, s)
 
-    # gets xaxis label as object
-    """ returns x-axis label as Label object. """
     def get_xaxis_label (self):
-        return self.xaxis.get_label()
+        return self.get_axis_label('x')
 
-    # gets xaxis label as string
-    """ returns x-axis label as string. """
     def get_xaxis_label_str (self):
-        return str(self.xaxis.get_label())
+        return self.get_axis_label_str('x')
 
     # sets the minimum and maximum limits for the xaxis
     """ method used to assign the xaxis minimum and maximum values at the same time. """
@@ -915,23 +1006,17 @@ class Figure (object):
 
     ## YAXIS ##
 
-    # initialize yaxis object
     def reset_yaxis(self):
         self.yaxis = Axis()
 
-    # adjust yaxis label properties
     def set_yaxis_label (self, l = None, s = None):
-        self.yaxis.set_label(l, s)
+        self.set_axis_label('y', l, s)
 
-    # gets the y-axis label as object
-    """ returns the y-axis label as string. """
     def get_yaxis_label (self):
-        return self.yaxis.get_label()
+        return self.get_axis_label('y')
 
-    # gets the y-axis label as string
-    """ returns the y-axis label as string. """
     def get_yaxis_label_str (self):
-        return str(self.yaxis.get_label())
+        return self.get_axis_label_str('y')
 
     # set the yaxis minimum and maximum values
     """ method that assigns minimum and maximum values to the yaxis limits. """
