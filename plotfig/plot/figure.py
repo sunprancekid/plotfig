@@ -828,7 +828,7 @@ class Figure (object):
     ## AXIS - SCALE ##
 
     ## TODO :: 'padval' is now 'pad_val'
-    ## TODO :: handle zero values with logscale axis
+    ## TODO :: handle zero and negative values with logscale axis
 
     def set_axis_scale (self, akey = None, linear = False, log = False, logscale_base = default_logscale_base):
         """ assigns scale to specified axis.
@@ -927,6 +927,167 @@ class Figure (object):
         return self.dict_axes[akey].get_logscale_base()
 
     ## AXIS - TICKS ## 
+
+    ## TODO :: 'axis_ticks' handles unassigned min and max values
+    ## TODO :: 'ticks' can only be assigned for continuous data types
+    ## TODO :: 'minval' is 'min_val', etc ... 
+    ## TODO :: for logscale, major ticks are always base values
+
+    def set_axis_ticks (self, akey = None, min_val = None, max_val = None, n_major_ticks = default_number_major_ticks, n_minor_ticks = default_number_minor_ticks):
+        """ assign major and minor ticks to specified axis.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to axis in axes dictionary.
+        min_val : float or int (optional, default is 'None')
+            minimum major axis value, if not already assigned.
+        max_val : float or int (optional, default is 'None')
+            maximum major axis value, if not already assinged.
+        n_major_ticks : int (optional, default is 'default_number_major_ticks')
+            number of ticks included axis upper and lower bounds.
+        n_minor_ticks : int (optional, default is 'default_number_minor_ticks')
+            number of minor ticks between each major tick.
+
+        Returns:
+        --------
+        None
+        """
+        # check that the axis exists in the dictionary
+        if not self.has_axis(akey): return
+        # set the major ticks
+        self.set_axis_major_ticks(akey, min_val = min_val, max_val = max_val, n_ticks = n_major_ticks)
+        # set the minor ticks
+        self.set_axis_minor_ticks(akey, n_ticks = n_minor_ticks)
+
+    def set_axis_major_ticks (self, akey = None, min_val = None, max_val = None, n_ticks = default_number_major_ticks):
+        """ assign major ticks to specified axis.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to axis in axes dictionary.
+        min_val : float or int (optional, default is 'None').
+            minimum major axis value, if not already assigned.
+        max_val : float or int (optional, default is 'None').
+            maximum major axis value, if not already assigned.
+        n_ticks : int (optional, default is 'default_number_major_ticks')
+            number of major ticks between upper and lower bounrs.
+
+        Returns:
+        --------
+        None
+        """
+        # check that the axis exists in the dictionary
+        if not self.has_axis(akey): return
+        # if mininimum and maximum values are unassigned, get them
+        if (not self.dict_axes[akey].has_minumum()) and (min_val is None):
+            # assign the minimum value
+            # self.set_minimum_value(akey)
+            pass
+        if (not self.dict_axes[akey].has_maximum()) and (max_val is None):
+            # assign the maximum value
+            # self.set_maximum_value(akey)
+            pass
+        # assign the major and minor ticks
+        self.dict_axes[akey].set_major_ticks(minval = min_val, maxval = max_val, nticks = n_ticks)
+
+    def get_axis_major_ticks (self, akey = None):
+        """ returns major ticks assigned to specified axis.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to axis in axes dictionary.
+
+        Returns:
+        --------
+        numpy.array
+            list of values corresponding to position of each major tick one axis.
+        """
+        # check that the axis exists in the dictionary
+        if not self.has_axis(akey): return
+        # return the major ticks for the axis
+        return self.dict_axes[akey].get_major_ticks()
+
+    def axis_has_major_ticks (self, akey = None):
+        """ determines if major ticks have been assigned to specified axis.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to axis in axes dictionary.
+
+        Returns:
+        --------
+        bool
+            'True' if axis been assigned major ticks, else 'False'.
+        """
+        # check that the axis exists in the dictionary
+        if not self.has_axis(akey): return
+        # return the major ticks for the axis
+        return self.dict_axes[akey].has_major_ticks()
+
+    def set_axis_minor_ticks (self, akey = None, n_ticks = default_number_minor_ticks):
+        """ assigns minor ticks to specified axis.
+
+        Minor ticks can only been assigned if major ticks have already been
+        assigned to the specified axis.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to axis in axes dictionary.
+        n_ticks : int (optional, default is 'default_number_minor_ticks')
+            number of minor ticks between each major tick.
+
+        Returns:
+        --------
+        None
+        """
+        # check that the axis exists in the dictionary
+        if not self.has_axis(akey): return
+        # check that the major ticks have been assigned
+        if self.axis_has_major_ticks(akey):
+            # set the axis minor ticks
+            self.dict_axes[akey].set_minor_ticks(nticks = n_ticks)
+
+    def get_axis_minor_ticks (self, akey = None):
+        """ returns minor ticks assigned to specified axis.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to axis in axes dictionary.
+
+        Returns:
+        --------
+        numpy.array
+            list of values corresponding to the position of each minor tick 
+            along the specified axis.
+        """
+        # check that the axis exists in the dictionary
+        if not self.has_axis(akey): return
+        # return the minor ticks
+        return self.dict_axes[akey].get_minor_ticks()
+
+    def axis_has_minor_ticks (self, akey = None):
+        """ determines if minor ticks have been assigned to specified axis.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to axis in axes dictionary.
+
+        Returns:
+        --------
+        bool
+            'True' if minor ticks have been assigned to axis, else 'False'.
+        """
+        # check that the axis exists in the dictionary
+        if not self.has_axis(akey): return
+        # check if the axis has minor ticks
+        return self.dict_axes[akey].has_minor_ticks()
 
     ## TITLE ##
 
