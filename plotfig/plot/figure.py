@@ -681,7 +681,10 @@ class Figure (object):
 
     ## AXES - LIMITS ## 
 
-    def set_axis_limits (self, akey = None, min_val = None, max_val = None):
+    ## TODO :: akey corresponds to column in figure dataframe
+    ## TODO :: akey corresponds to axis data type
+
+    def set_axis_limits (self, akey = None, min_val = None, max_val = None, pad_val = None):
         """ assigns the mininmum and / or maximum values to the axis.
 
         Parameters:
@@ -692,44 +695,80 @@ class Figure (object):
             axis lower bounds when plotting.
         max_val: float or int (optional, default is 'None')
             axis upper bounds when plotting.
+        pad_val: float (optional, default is 'None')
+            precentage to scale upper and lower bounds when plotting
 
         Returns:
         --------
         None
         """
-        pass
+        # check that the key exists in the dictionary
+        if not self.has_axis(akey): return
+        # determine the data column corresponding to the axis
+        if akey == 'x':
+            col = self.xcol
+        elif akey == 'y':
+            col = self.ycol
+        else:
+            print("ERROR :: Figure.set_axis_limits() :: axis key '{0}' has no assigned column.".format(akey))
+            return
+        # if the column has not been assigned yet, return
+        if col is None:
+            return
+        # check the data type corresponding to the column
+        # cannot set minimum or maximum for non-numerical formats
+        if (self.df[col].dtype != float) and (self.df[col].dtype != int):
+            print("ERROR :: Figure.set_axis_limits() :: cannot set limits to axis '{0}' for dtype '{1}'".format(akey, self.df[col].dtype))
+            return
+        # if the minimum or maximum values are unassigned, get them from the dataframe
+        if min_val is None:
+            min_val = min(self.df[col].to_list())
+        if max_val is None:
+            max_val = max(self.df[col].to_list())
+        # assign minimum and maximum values to the axis, pad limits
+        self.dict_axes[akey].set_limits(min_val, max_val)
+        self.dict_axes[akey].pad_limits(padval)
 
-    def set_axis_minimum_value (self, akey = None, min_val = None):
+
+    def set_axis_minimum_value (self, akey = None, val = None):
         """ assigns minimum value to axis.
 
         Parameters:
         -----------
         akey : str
             key corresponding to axis in 'dict_axes'.
-        min_val : float or int
+        val : float or int
             axis lower bounds when plotting.
 
         Returns:
         --------
         None
         """
-        pass
+        # check that the key exists in the dictionary
+        if not self.has_axis(akey): return
+        # TODO :: check the axis data type
+        # pass the minimum value to the axis
+        self.dict_axes[akey].set_minimum(val)
 
-    def set_axis_maximum_value (self, akey = None, max_val = None):
+    def set_axis_maximum_value (self, akey = None, val = None):
         """ assigns maximum value to axis.
 
         Parameters:
         -----------
         akey : str
             key corresponding to axis in 'dict_axes'.
-        max_val : float or int
+        val : float or int
             axis upper bounds when plotting.
 
         Returns:
         --------
         None
         """
-        pass
+        # check that the key exists in the dictionary
+        if not self.has_axis(akey): return
+        # TODO :: check the axis data type
+        # pass the maximum value to the axis
+        self.dict_axes[akey].set_maximum(val)
 
     def get_axis_minimum_value (self, akey = None):
         """ get the lower bound value assigned to the axis limits.
@@ -744,7 +783,10 @@ class Figure (object):
         float
             lower bounds assigned to specified axis when plotting.
         """
-        pass
+        # check that the key exists in the axes dictionary
+        if not self.has_axis(akey): return
+        # return the lower bounds assigned to the axis
+        return self.dict_axes[akey].get_minimum()
 
     def get_axis_maximum_value (self, akey = None):
         """ get the upper bound value assigned to axis limits.
@@ -759,7 +801,10 @@ class Figure (object):
         float
             upper bounds assigned to specified axis when plotting.
         """
-        pass
+        # check that the key exists in the axes dictionary
+        if not self.has_axis(akey): return
+        # return the upper bounds assigned to the axis
+        return self.dict_axes[akey].get_maximum()
 
 
     ## TITLE ##
