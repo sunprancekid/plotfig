@@ -729,7 +729,6 @@ class Figure (object):
         self.dict_axes[akey].set_limits(min_val, max_val)
         self.dict_axes[akey].pad_limits(padval)
 
-
     def set_axis_minimum_value (self, akey = None, val = None):
         """ assigns minimum value to axis.
 
@@ -943,48 +942,20 @@ class Figure (object):
     def get_xaxis_label_str (self):
         return self.get_axis_label_str('x')
 
-    # sets the minimum and maximum limits for the xaxis
-    """ method used to assign the xaxis minimum and maximum values at the same time. """
     def set_xaxis_limits (self, min_val = None, max_val = None, padval = None):
+        self.set_axis_limits('x', min_val, max_val, padval)
 
-        # check the data type corresponding to the x-axis column
-        # cannot set minimum or maximum for non-numerical formats
-        if (self.df[self.xcol].dtype != float) and (self.df[self.xcol].dtype != int):
-            print("ERROR :: Figure.set_xaxis_limits() :: cannot set limits for dtype '{0}'".format(self.df[self.xcol].dtype))
-            return
-
-        # if xaxis data has already been assigned to the figure object
-        if self.xcol is not None:
-            # pull min and max values from the list if they were not already provided to the method
-            if min_val is None:
-                min_val = min(self.df[self.xcol].to_list())
-            if max_val is None:
-                max_val = max(self.df[self.xcol].to_list())
-
-        # assign the minimum and maximum values
-        self.xaxis.set_limits(min_val, max_val)
-        # pad limits
-        self.xaxis.pad_limits(padval)
-
-    # sets the minimum value for the xaxis limit
-    """ method used the assign the xaxis minimum limit as double. """
     def set_xaxis_min (self, val = None):
-        self.xaxis.set_minimum(val)
+        self.set_axis_minimum_value('x', val)
 
-    # sets the maximum value for the xaxis limit
-    """ method used to assign the xaxis maximum as double. """
     def set_xaxis_max (self, val = None):
-        self.xaxis.set_maximum(val)
+        self.set_axis_maximum_value('x', val)
 
-    # gets the minimum value for the xaxis limit
-    """ method that returns the minimum value assigned to the xaxis limit. returns 'None' if unassigned. """
     def get_xaxis_min (self):
-        return self.xaxis.get_minimum()
+        return self.get_axis_minimum_value('x')
 
-    # gets the maximum value for the xaxis limit
-    """ method that returns the maximum value assigned to the xaxis limit. returns 'None' if unassigned. """
     def get_xaxis_max (self):
-        return self.xaxis.get_maximum()
+        return self.get_axis_maximum_value('x')
 
     # set the xaxis as either linear or logscale
     """ method sets the xaxis as either a linear or logscale. logscale base set the logscale base as default if not specified by user. """
@@ -1063,47 +1034,20 @@ class Figure (object):
     def get_yaxis_label_str (self):
         return self.get_axis_label_str('y')
 
-    # set the yaxis minimum and maximum values
-    """ method that assigns minimum and maximum values to the yaxis limits. """
     def set_yaxis_limits (self, min_val = None, max_val = None, padval = None):
+        self.set_axis_limits('y', min_val = min_val, max_val = max_val, pad_val = padval)
 
-        # check ycol dtype for non-numerical
-        if (self.df[self.ycol].dtype != float) and (self.df[self.ycol].dtype != int):
-            # let the user know
-            print("ERROR :: Figure.set_yaxis_limits() :: unable to set limits for ycol with non-numerical dtype '{0}'".format(self.df[self.ycol].dtype))
-
-        # if yaxis data has already been provided to the method
-        if self.ycol is not None:
-            # pull min and max values from the list if they were not already provided to the method
-            if min_val is None:
-                min_val = min(self.df[self.ycol].to_list())
-            if max_val is None:
-                max_val = max(self.df[self.ycol].to_list())
-
-        # assign the minimum and maximum values
-        self.yaxis.set_limits(min_val, max_val)
-        # pad limits
-        self.yaxis.pad_limits(padval)
-
-    # set yaxis minimum limit
-    """ method that assigns a double as the yaxis minimum limit. """
     def set_yaxis_min (self, val):
-        self.yaxis.set_minimum(val)
+        self.set_axis_minimum_value('y', val)
 
-    # set yaxis maximum limit
-    """ method that assigns a double as the yaxis maximum limit. """
     def set_yaxis_max (self, val):
-        self.yaxis.set_maximum(val)
+        self.set_axis_maximum_value('y', val)
 
-    # get the yaxis minimum limit
-    """ method that returns the yaxis minimum limit as double. returns 'None' if unassigned. """
     def get_yaxis_min (self):
-        return self.yaxis.get_minimum()
+        return self.get_axis_minimum_value('y')
 
-    # get the yaxis maximum limit
-    """ method that returns the yaxis maximum limit as double. returns 'None' is unassigned. """
     def get_yaxis_max (self):
-        return self.yaxis.get_maximum()
+        return self.get_axis_maximum_value('y')
 
     # set the yaxis as either linear or logscale
     """ method sets the yaxis as either a linear or logscale. logscale base set the logscale base as default if not specified by user. """
