@@ -136,6 +136,20 @@ class Figure (object):
         returns scale assigned to the axis.
     get_axis_scale_base:
         if specified axis is logarithmic scale, returns base.
+    set axis_ticks:
+        assigns major and minor ticks to specified axis.
+    set_axis_major_ticks:
+        assign major ticks to specified axis.
+    get_axis_major_ticks:
+        returns major ticks assigned to specified axis.
+    axis_has_major_ticks:
+        determines if ticks have been assigned to specified axis.
+    set_axis_minor_ticks:
+        assigns minor ticks to specified axis.
+    get_axis_minor_ticks:
+        returns minor ticks assigned to specified axis.
+    axis_has_minor_ticks:
+        determines if minor ticks have been assigned to specified axis.
     set_title_label:
         assign title label string and size.
     get_title_label:
