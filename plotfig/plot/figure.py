@@ -932,6 +932,7 @@ class Figure (object):
     ## TODO :: 'ticks' can only be assigned for continuous data types
     ## TODO :: 'minval' is 'min_val', etc ... 
     ## TODO :: for logscale, major ticks are always base values
+    ## TODO :: add mask or format string for labeling ticks (optional)
 
     def set_axis_ticks (self, akey = None, min_val = None, max_val = None, n_major_ticks = default_number_major_ticks, n_minor_ticks = default_number_minor_ticks):
         """ assign major and minor ticks to specified axis.
@@ -1213,6 +1214,8 @@ class Figure (object):
 
     ## XAXIS ##
 
+    ## TODO :: depricate these methods perminantly
+
     def reset_xaxis(self):
         self.xaxis = Axis()
 
@@ -1255,39 +1258,30 @@ class Figure (object):
     def get_xaxis_scale_base (self):
         return self.get_axis_scale_base('x')
 
-    # method used to set the tick marks for the major and minor xaxis
-    """ method sets the tick marks used for the xaxis."""
     def set_xaxis_ticks(self, minval = None, maxval = None, nmajorticks = default_number_major_ticks, nminorticks = default_number_minor_ticks):
-        self.xaxis.set_major_ticks(minval = minval, maxval = maxval, nticks = nmajorticks)
-        self.xaxis.set_minor_ticks(nminorticks)
+        self.set_axis_ticks('x', min_val = minval, max_val = maxval, n_major_ticks = nmajorticks, n_minor_ticks = nminorticks)
 
-    """ assigns major ticks to xaxis. """
     def set_xaxis_major_ticks(self, minval = None, maxval = None, nticks = default_number_major_ticks):
-        self.xaxis.set_major_ticks(minval, maxval, nticks)
+        self.set_axis_major_ticks(min_val = minval, max_val = maxval, n_ticks = nticks)
 
-    """ returns the major ticks assigned to the xaxis. """
     def get_xaxis_major_ticks(self):
-        return self.xaxis.get_major_ticks()
+        return self.get_axis_major_ticks('x')
 
-    # returns boolean determining if the xaxis has major ticks
     def xaxis_has_major_ticks(self):
-        return self.xaxis.has_major_ticks()
+        return self.axis_has_major_ticks('x')
 
-    """ assigns the minor ticks for the xaxis. """
     def set_xaxis_minor_ticks(self, nticks = default_number_minor_ticks):
-        self.xaxis.set_minor_ticks(nticks)
+        self.set_axis_minor_ticks('x', n_ticks = nticks)
 
-    """ returns the minor ticks assigned to the x_axis. """
     def get_xaxis_minor_ticks(self):
-        return self.xaxis.get_minor_ticks()
+        return self.get_axis_minor_ticks('x')
 
-    """ returns boolean determining if minor ticks have been assigned to the x-axis. """
     def xaxis_has_minor_ticks(self):
-        return self.xaxis.has_minor_ticks()
-
-    # assigns values to ticks used for
+        return self.axis_has_minor_ticks('x')
 
     ## YAXIS ##
+
+    ## TODO :: depricate these methods perminantly
 
     def reset_yaxis(self):
         self.yaxis = Axis()
@@ -1331,35 +1325,26 @@ class Figure (object):
     def get_yaxis_scale_base (self):
         return self.get_axis_scale_base('y')
 
-    # method used to set the tick marks and tick labels for the major and minor yaxis
-    """ method sets the tick marks used for the yaxis."""
     def set_yaxis_ticks(self, minval = None, maxval = None, nmajorticks = default_number_major_ticks, nminorticks = default_number_minor_ticks):
-        self.yaxis.set_major_ticks(minval = minval, maxval = maxval, nticks = nmajorticks)
-        self.yaxis.set_minor_ticks(nminorticks)
+        self.set_axis_ticks('y', min_val = minval, max_val = maxval, n_major_ticks = nmajorticks, n_minor_ticks = nminorticks)
 
-    """ assigns major ticks to yaxis. """
     def set_yaxis_major_ticks(self, minval = None, maxval = None, nticks = default_number_major_ticks):
-        self.yaxis.set_major_ticks(minval, maxval, nticks)
+        self.set_axis_major_ticks('y', min_val = minval, max_val = maxval, n_ticks = nticks)
 
-    """ returns the major ticks assigned to the yaxis. """
     def get_yaxis_major_ticks(self):
-        return self.yaxis.get_major_ticks()
+        return self.get_axis_major_ticks('y')
 
-    # returns boolean determining if the yaxis has major ticks
     def yaxis_has_major_ticks(self):
-        return self.yaxis.has_major_ticks()
+        return self.axis_has_major_ticks('y')
 
-    """ assigns the minor ticks for the yaxis. """
     def set_yaxis_minor_ticks(self, nticks = default_number_minor_ticks):
-        self.yaxis.set_minor_ticks(nticks)
+        self.set_axis_minor_ticks('y', n_ticks = nticks)
 
-    """ returns the minor ticks assigned to the y_axis. """
     def get_yaxis_minor_ticks(self):
-        return self.yaxis.get_minor_ticks()
+        return self.get_axis_minor_ticks('y')
 
-    """ returns boolean determining if minor ticks have been assigned to the y-axis. """
     def yaxis_has_minor_ticks(self):
-        return self.yaxis.has_minor_ticks()
+        return self.axis_has_minor_ticks('y')
 
     ## DPI ##
 
