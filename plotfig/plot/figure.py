@@ -1066,36 +1066,20 @@ class Figure (object):
     def get_xaxis_max (self):
         return self.get_axis_maximum_value('x')
 
-    # set the xaxis as either linear or logscale
-    """ method sets the xaxis as either a linear or logscale. logscale base set the logscale base as default if not specified by user. """
     def set_xaxis_scale (self, linear = False, log = False, logscale_base = default_logscale_base):
-        if linear and log:
-            return
-        elif linear:
-            self.xaxis.set_scale(s = scale_linear)
-        elif log:
-            self.xaxis.set_scale(s = scale_log, b = logscale_base)
-            # reset limits with padding
-            self.set_xaxis_limits(padval = 0.05)
+        self.set_axis_scale('x', linear = linear, log = log, logscale_base = logscale_base)
 
-    # check if xaxis is logscale
-    """ method returns boolean determining if the xaxis is logscale or not. """
     def xaxis_is_logscale (self):
-        return self.xaxis.is_logscale()
+        return self.axis_is_logscale('x')
 
-    # checks if xaxis is linear
     def xaxis_is_linearscale (self):
-        return self.xaxis.is_linearscale()
+        return self.axis_is_linearscale('x')
 
-    # returns the scale assigned to xaxis
-    """ method that returns scale used for xaxis as either 'log' or 'linear' """
     def get_xaxis_scale (self):
-        return self.xaxis.get_scale()
+        return self.get_axis_scale('x')
 
-    # returns scale base assigned to xaxis
-    """ method that returns log base assigned to xaxis. if linear scale, returns None. """
     def get_xaxis_scale_base (self):
-        return self.xaxis.get_logscale_base()
+        return self.get_axis_scale_base('x')
 
     # method used to set the tick marks for the major and minor xaxis
     """ method sets the tick marks used for the xaxis."""
@@ -1158,36 +1142,20 @@ class Figure (object):
     def get_yaxis_max (self):
         return self.get_axis_maximum_value('y')
 
-    # set the yaxis as either linear or logscale
-    """ method sets the yaxis as either a linear or logscale. logscale base set the logscale base as default if not specified by user. """
     def set_yaxis_scale (self, linear = False, log = False, logscale_base = default_logscale_base):
-        if linear and log:
-            return
-        elif linear:
-            self.yaxis.set_scale(s = scale_linear)
-        elif log:
-            self.yaxis.set_scale(s = scale_log, b = logscale_base)
-            # reset limits with padding
-            self.set_yaxis_limits(padval = 0.05)
+        self.set_axis_scale('y', linear = linear, log = log, logscale_base = logscale_base)
 
-    # check if yaxis is logscale
-    """ method returns boolean determining if the yaxis is logscale or not. """
     def yaxis_is_logscale(self):
-        return self.yaxis.is_logscale()
+        return self.axis_is_logscale('y')
 
-    # check if yaxis is linearscale
     def yaxis_is_linearscale (self):
-        return self.yaxis.is_linearscale()
+        return self.axis_is_linearscale('y')
 
-    # returns the scale assigned to yaxis
-    """ method that returns scale used for yaxis as either 'log' or 'linear' """
     def get_yaxis_scale (self):
-        return self.yaxis.get_scale()
+        return self.get_axis_scale('y')
 
-    # returns scale base assigned to yaxis
-    """ method that returns log base assigned to yaxis. if linear scale, returns None. """
     def get_yaxis_scale_base (self):
-        return self.yaxis.get_logscale_base()
+        return self.get_axis_scale_base('y')
 
     # method used to set the tick marks and tick labels for the major and minor yaxis
     """ method sets the tick marks used for the yaxis."""
