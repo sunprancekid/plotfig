@@ -126,6 +126,16 @@ class Figure (object):
         returns the minimum value assigned to the specified axis.
     get_axis_maximum_value:
         returns the maximum value assigned to the specified axis.
+    set_axis_scale:
+        assigns scale to specifed axis.
+    axis_is_logscale:
+        determines if specified axis is set to logarithmic scale.
+    axis_is_linearscale:
+        determines if specified axis is set to linear scale.
+    get_axis_scale:
+        returns scale assigned to the axis.
+    get_axis_scale_base:
+        if specified axis is logarithmic scale, returns base.
     set_title_label:
         assign title label string and size.
     get_title_label:
@@ -817,6 +827,9 @@ class Figure (object):
 
     ## AXIS - SCALE ##
 
+    ## TODO :: 'padval' is now 'pad_val'
+    ## TODO :: handle zero values with logscale axis
+
     def set_axis_scale (self, akey = None, linear = False, log = False, logscale_base = default_logscale_base):
         """ assigns scale to specified axis.
 
@@ -1052,7 +1065,7 @@ class Figure (object):
         return self.get_axis_label_str('x')
 
     def set_xaxis_limits (self, min_val = None, max_val = None, padval = None):
-        self.set_axis_limits('x', min_val, max_val, padval)
+        self.set_axis_limits('x', min_val = min_val, max_val = max_val, pad_val = padval)
 
     def set_xaxis_min (self, val = None):
         self.set_axis_minimum_value('x', val)
