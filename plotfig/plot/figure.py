@@ -104,6 +104,28 @@ class Figure (object):
 
     Methods:
     --------
+    reset_axes:
+        resets all axes dictionary.
+    has_axis:
+        checks if axis key exists in axis dictionary.
+    set_axis_label:
+        assigns label to axis if it exists.
+    get_axis_label:
+        get the label corresponding to the specified axis.
+    get_axis_label_str:
+        return string representation of axis label.
+    axis_has_label:
+        determines if label has been assigned to axis.
+    set_axis_limits:
+        assigns the minimum and / or maximum values to the specified axis.
+    set_axis_minimum_value:
+        assigns minimum value to the specified axis.
+    set_axis_maximum_value:
+        assigns maximum value to the specified axis.
+    get_axis_minimum_value:
+        returns the minimum value assigned to the specified axis.
+    get_axis_maximum_value:
+        returns the maximum value assigned to the specified axis.
     set_title_label:
         assign title label string and size.
     get_title_label:
@@ -130,18 +152,6 @@ class Figure (object):
         returns save path, including directory, filename, and filetype.
     save_data:
         saves data used for generate figure as csv in save directory.
-    reset_axes:
-        resets all axes dictionary.
-    has_axis:
-        checks if axis key exists in axis dictionary.
-    set_axis_label:
-        assigns label to axis if it exists.
-    get_axis_label:
-        get the label corresponding to the specified axis.
-    get_axis_label_str:
-        return string representation of axis label.
-    axis_has_label:
-        determines if label has been assigned to axis.
 
     """
 
