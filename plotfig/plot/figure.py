@@ -815,6 +815,105 @@ class Figure (object):
         # return the upper bounds assigned to the axis
         return self.dict_axes[akey].get_maximum()
 
+    ## AXIS - SCALE ##
+
+    def set_axis_scale (self, akey = None, linear = False, log = False, logscale_base = default_logscale_base):
+        """ assigns scale to specified axis.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to specified axis.
+        linear : bool
+            determines if linear scale assign to axis.
+        log : bool
+            determines if log scale is assigned to axis.
+        logscale_base : int
+            Postitive real number assigned to log scale.
+
+        Returns:
+        --------
+        None
+        """
+        # check that the axis exists in the dictionary
+        if not self.has_axis(akey): return
+        # assign the scale
+        if linear:
+            self.dict_axes[akey].set_scale(s = scale_linear)
+        elif log:
+            self.dict_axes[akey].set_scale(s = scale_log, base = logscale_base)
+            # reset the limits with padding
+            self.dict_axes[akey].pad_limits(padval = 0.05)
+
+    def axis_is_logscale (self, akey = None):
+        """ determines if the specified axis is set to logscale.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to axis is axes dictionary.
+
+        Returns:
+        --------
+        bool
+            'True' if axis is set to logscale, else 'False'.
+        """
+        # check that the axis exists in the dictionary
+        if not self.has_axis(akey): return
+        return self.dict_axes[akey].is_logscale()
+
+    def axis_is_linearscale (self, akey = None):
+        """ determines if the specified axis is set to linear scale.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to axis in axes dictionary.
+
+        Returns:
+        --------
+        bool
+            'True' if the axis is set to linear scale, else 'False'.
+        """
+        # check that the axis exists in the dictionary
+        if not self.has_axis(akey): return
+        return self.dict_axes[akey].is_linearscale()
+
+    def get_axis_scale (self, akey = None):
+        """ returns the scale assigned to the axis.
+
+        Parameters:
+        -----------
+        akey : str
+            key coresponding to axis in axes dictionary.
+
+        Returns:
+        --------
+        str
+            string representation of scale assigned to axis.
+        """
+        # check that the axis exists in the dictionary
+        if not self.has_axis(akey): return
+        return self.dict_axes[akey].get_scale()
+
+    def get_axis_scale_base (self, akey = None):
+        """ if specified axis is logscale, return base. otherwise returns None.
+
+        Parameters:
+        -----------
+        akey : str
+            key corresponding to axis in axes dictionary.
+
+        Returns:
+        --------
+        float
+            base assigned to specified axis if logscale.
+        """
+        # check that the axis exists in the dictionary
+        if not self.has_axis(akey): return
+        return self.dict_axes[akey].get_logscale_base()
+
+    ## AXIS - TICKS ## 
 
     ## TITLE ##
 
