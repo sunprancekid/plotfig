@@ -25,7 +25,7 @@ from plot.color import Scheme, Color
 NONZERO_EXITCODE = 120
 
 ## constants, defaults for Figure class
-accepted_axes = ['x', 'y', 'y2', 'c', 'l']
+accepted_axes = ['x', 'y', 'y2', 'c', 'i']
 default_title_label = None
 default_subtitle_label = None
 default_xaxis_label = None
@@ -86,6 +86,8 @@ class Figure (object):
 
     Attributes:
     -----------
+    df : pandas.DataFrame
+        contains all data used for plotting
     axes_dict : Dict[Axis]
         dictionary containing all figure axes.
     title_label : Label
@@ -96,9 +98,6 @@ class Figure (object):
         dpi assigned to figure
     col_dict : # TODO :: add this
     col_type_dict : # TODO :: add this
-    df : DataFrame
-    xaxis : Axis
-    yaxis : Axis
     marker_dict : 
     color_dict : 
 
@@ -274,6 +273,80 @@ class Figure (object):
         self.icol_label_dict = None
         self.icol_color_dict = None
 
+    def append_lists_from_dict (self, list_dict = None):
+        """ append data stored in dictionary to Figure object.
+
+        'list_dict' contains lists which are appended to the object DataFrame
+        'df'. all lists in 'list_dict' must be the same length or be a singular
+        value. singular values are used to create a list matching the length
+        of all other lists in the dictionary. if all lists are singular values,
+        only one data series is appended. 
+
+        if object DataFrame 'df' has not been initialized (i.e. the first
+        time appending data), 'list_dict' can have any structure. when 
+        subsequently appending data to object, 'list_dict' must match the 
+        structure of the object 'df': each key in 'list_dict' must point
+        to a column header in 'df'. if 'list_dict' does not contain a list
+        which points to an existing column in 'df', the operation with fail.
+
+        NOTE: when using keys other than 'x', 'y', 'y2', 'c', and 'i', user 
+        must map columns to the appropriate axes when plotting.
+
+        Parameters:
+        -----------
+        list_dict : Dict[List]
+            contains data to appending to object DataFrame 'df'.
+
+        Returns:
+        --------
+        bool
+            'True' if operation was successful, else 'False'.
+        """
+        # check if 'df' has been initialized
+        if self.df is not None:
+            # check 'list_dict' keys
+        else:
+            # check 'list_dict' format
+            # initialize 'df'
+            # initialize axes
+
+
+    def append_lists (self, xlist = None, ylist = None, clist = None, ilist = None, label = None):
+        """ append data as lists to object dataframe 'df'.
+
+        list corresponding to 'x', 'y', 'c' and 'i' columns are provided, where
+        all lists have the same length. if 'df' is not yet initialized, any
+        column can be provided. otherwise, provided lists must match those
+        already existing in 'df'. (e.g. if 'df' only contains 'x' and 'y' 
+        columns, 'c' list cannot be provided).
+
+        Parameters:
+        -----------
+        xlist : List
+            list of data corresponding to 'x' column.
+        ylist : List
+            list of data corresponding to 'y' column.
+        clist : List
+            list of data corresponding to 'c' column.
+        ilist : List
+            list of data corresponding to 'i' column.
+        label : str, float, or int (optional)
+            constant label assigned to all data provided (replaces ilist).
+
+        Returns:
+        --------
+        None
+        """
+        pass
+        # check if df has been created
+        if self.df is not None:
+            # check if the list match all of the existing columns
+        else:
+            # initialize df with the specified lists
+            # initialize axes corresponding to lists
+        # parse data, append to temp df
+        # check all list lengths are the same
+        # concatenate df and temp df
     # load data from csv file
     def append_from_csv (self, filename = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
         pass
