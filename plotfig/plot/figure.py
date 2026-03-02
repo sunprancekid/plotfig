@@ -305,6 +305,14 @@ class Figure (object):
         # check if 'df' has been initialized
         if self.df is not None:
             # check 'list_dict' keys
+            for c in list(list_dict.keys()):
+                if c not in list(self.df.columns.values):
+                    print("ERROR")
+            # check 'df' columns again 'list_dict' keys
+            for c in list(self.df.columns.values):
+                if c not in list(list_dict.keys()):
+                    print("ERROR")
+            # check the length of each list in 'list_dict'
         else:
             # check 'list_dict' format
             # initialize 'df'
@@ -347,6 +355,7 @@ class Figure (object):
         # parse data, append to temp df
         # check all list lengths are the same
         # concatenate df and temp df
+    
     # load data from csv file
     def append_from_csv (self, filename = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
         pass
