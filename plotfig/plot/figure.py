@@ -308,24 +308,47 @@ class Figure (object):
             for c in list(list_dict.keys()):
                 if c not in list(self.df.columns.values):
                     print("ERROR :: Figure.append_lists_from_dict() :: key '{0}' in list_dict not found in Figure 'df' columns.".format(c))
-                    return
+                    return False
             # check 'df' columns again 'list_dict' keys
             for c in list(self.df.columns.values):
                 if c not in list(list_dict.keys()):
                     print("ERROR :: Figure.append_lists_from_dict() :: Figure 'df' column {0} not found in 'list_dict'.".format(c))
-            # check the length of each list in 'list_dict'
-            list_len = 1
-            for c in list(list_dict.keys()):
-                if len(list_dict[c]) != list_len:
-                    if list_len == 1:
-                        list_len = len(list_dict[c])
-                    else:
-                        print("ERROR :: Figure.append_lists_from_dict() :: lists in 'list_dict' are uneven.")
-                        return
-        else:
-            # check 'list_dict' format
-            # initialize 'df'
+                    return False
+        # check the length of each list in 'list_dict'
+        list_len = 1
+        for c in list(list_dict.keys()):
+            # skip any singular items, or lists that only have one item
+            if (not isinstance(list_dict[c], list)) or (len(list_dict[c]) == 1): continue
+            if len(list_dict[c]) != list_len:
+                # if the length of the items
+                if list_len == 1:
+                    # according to this algorithm, list_len can be updated once
+                    # 'list_len' is update from 1 to the length of the first non-unity list
+                    list_len = len(list_dict[c])
+                else:
+                    # the second time that the lists are not equal, an error is thrown
+                    print("ERROR :: Figure.append_lists_from_dict() :: lists in 'list_dict' are uneven.")
+                    return False
+        # replace all single items with lists that match the list length
+        for c in list(list_dict.keys()):
+            if not isinstance(list_dict, list):
+                list_dict[c] = [list_dict[c] for i in range(list_len)]
+            elif len(list_dict[c]) == 1 and (list_len > 1):
+                list_dict[c] = [list_dict[c][0] for i in range(list_len)]
+        # add data to df
+        if self.df is None:
+            # initialize 'df' with list_dict
+            self.df = pd.DataFrame.from_dict(list_dict)
             # initialize axes
+            for c in list(list_dict.keys()):
+                self.dict_axes[c] = Axis()
+        else:
+            # the length of all lists are equal
+            # 'list_dict' keys match all columns exactly
+            # concatenate 'list_dict' to existing df
+            self.df = pd.concat([self.df, pd.DataFrame.from_dict(list_dict)], ignore_index = True)
+
+        return True
 
 
     def append_lists (self, xlist = None, ylist = None, clist = None, ilist = None, label = None):
