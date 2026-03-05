@@ -307,12 +307,21 @@ class Figure (object):
             # check 'list_dict' keys
             for c in list(list_dict.keys()):
                 if c not in list(self.df.columns.values):
-                    print("ERROR")
+                    print("ERROR :: Figure.append_lists_from_dict() :: key '{0}' in list_dict not found in Figure 'df' columns.".format(c))
+                    return
             # check 'df' columns again 'list_dict' keys
             for c in list(self.df.columns.values):
                 if c not in list(list_dict.keys()):
-                    print("ERROR")
+                    print("ERROR :: Figure.append_lists_from_dict() :: Figure 'df' column {0} not found in 'list_dict'.".format(c))
             # check the length of each list in 'list_dict'
+            list_len = 1
+            for c in list(list_dict.keys()):
+                if len(list_dict[c]) != list_len:
+                    if list_len == 1:
+                        list_len = len(list_dict[c])
+                    else:
+                        print("ERROR :: Figure.append_lists_from_dict() :: lists in 'list_dict' are uneven.")
+                        return
         else:
             # check 'list_dict' format
             # initialize 'df'
