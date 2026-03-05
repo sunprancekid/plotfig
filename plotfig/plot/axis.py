@@ -332,7 +332,7 @@ class Axis (object):
         self.reset_minor_ticks()
         # TODO :: add attribute to define scale type has being either catagories or numbers
 
-    def ___str___ (self):
+    def __str__ (self):
         """ generate string describing state of Axis object attributes.
 
         Parameters:
@@ -346,9 +346,9 @@ class Axis (object):
 
         """
         s = ""
-        s.append("Axis Label String: {0}\nAxis Label Fontsize: {1}\n".format(self.get_label_string(), self.get_label_fontsize()))
-        s.append("Axis Limits (min, max): ({0}, {1})\n".format(self.get_minimum(), self.get_maximum()))
-        pass
+        s += "Axis Label String: {0}\nAxis Label Fontsize: {1}\n".format(self.get_label(), self.label.get_size())
+        s += "Axis Limits (min, max): ({0}, {1})\n".format(self.get_minimum(), self.get_maximum())
+        return s
 
     ## AXIS LABEL
 
@@ -540,6 +540,7 @@ class Axis (object):
             # pad axis limits according to linear scale
             self.set_limits(min_val = minval - ((maxval - minval) * padval), max_val = maxval + (maxval - minval) * padval)
         else:
+            # if self.has_minimum():
             # pad the axis limits according to a logscale
             maxval = self.get_maximum()
             minval = self.get_minimum()

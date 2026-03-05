@@ -379,11 +379,11 @@ class Figure (object):
         """
         pass
         # check if df has been created
-        if self.df is not None:
-            # check if the list match all of the existing columns
-        else:
-            # initialize df with the specified lists
-            # initialize axes corresponding to lists
+        # if self.df is not None:
+        #     # check if the list match all of the existing columns
+        # else:
+        #     # initialize df with the specified lists
+        #     # initialize axes corresponding to lists
         # parse data, append to temp df
         # check all list lengths are the same
         # concatenate df and temp df
@@ -875,7 +875,7 @@ class Figure (object):
             max_val = max(self.df[col].to_list())
         # assign minimum and maximum values to the axis, pad limits
         self.dict_axes[akey].set_limits(min_val, max_val)
-        self.dict_axes[akey].pad_limits(padval)
+        self.dict_axes[akey].pad_limits(pad_val)
 
     def set_axis_minimum_value (self, akey = None, val = None):
         """ assigns minimum value to axis.
@@ -982,7 +982,21 @@ class Figure (object):
         if linear:
             self.dict_axes[akey].set_scale(s = scale_linear)
         elif log:
-            self.dict_axes[akey].set_scale(s = scale_log, base = logscale_base)
+            self.dict_axes[akey].set_scale(s = scale_log, b = logscale_base)
+            # update the minimum value to be the lowest value greater than zero
+            # TODO :: akey corresponds to col in df
+            # determine the data column corresponding to the axis
+            if akey == 'x':
+                col = self.xcol
+            elif akey == 'y':
+                col = self.ycol
+            else:
+                print("ERROR :: Figure.set_axis_scale() :: axis key '{0}' has no assigned column.".format(akey))
+                return
+            ## PADVAL belongs to AXIS, and is applied only when the min and max vals are called for, rather then when setting padval (this prevents iterative padding from cummulating.)
+            # find the lowerest value greater than zero
+            print(str(self.dict_axes[akey]))
+            print(self.dict_axes[akey].get_minimum())
             # reset the limits with padding
             self.dict_axes[akey].pad_limits(padval = 0.05)
 
