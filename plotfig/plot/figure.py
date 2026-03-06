@@ -955,9 +955,6 @@ class Figure (object):
 
     ## AXIS - SCALE ##
 
-    ## TODO :: 'padval' is now 'pad_val'
-    ## TODO :: handle zero and negative values with logscale axis
-
     def set_axis_scale (self, akey = None, linear = False, log = False, logscale_base = default_logscale_base):
         """ assigns scale to specified axis.
 

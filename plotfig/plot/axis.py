@@ -965,7 +965,7 @@ class Axis (object):
             self.set_minimum(minval)
         elif not has_minval and self.has_minimum():
             # if a minimum has not been provided but the axis already has a value, use that one
-            minval = self.get_minimum()
+            minval = self.get_minimum(pad = False)
         else:
             # unable to parse minimum value, throw error
             print("ERROR :: Axis.set_major_ticks() :: 'minval' not specified, must be float or integer.")
@@ -977,7 +977,7 @@ class Axis (object):
             self.set_maximum(maxval)
         elif not has_maxval and self.has_maximum():
             # if a maximum has not been specified but the axis already as one, use that value
-            maxval = self.get_maximum()
+            maxval = self.get_maximum(pad = False)
         else:
             # unable to parse maximum value, throw error
             print("ERROR :: Axis.set_major_ticks() :: 'maxval' not specified, must be float or integer.")
