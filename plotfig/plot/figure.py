@@ -993,12 +993,9 @@ class Figure (object):
             else:
                 print("ERROR :: Figure.set_axis_scale() :: axis key '{0}' has no assigned column.".format(akey))
                 return
-            ## PADVAL belongs to AXIS, and is applied only when the min and max vals are called for, rather then when setting padval (this prevents iterative padding from cummulating.)
             # find the lowerest value greater than zero
-            print(str(self.dict_axes[akey]))
-            print(self.dict_axes[akey].get_minimum())
             # reset the limits with padding
-            self.dict_axes[akey].pad_limits(padval = 0.05)
+            self.dict_axes[akey].pad_limits(pad_val = 0.05)
 
     def axis_is_logscale (self, akey = None):
         """ determines if the specified axis is set to logscale.
@@ -1124,7 +1121,7 @@ class Figure (object):
         # check that the axis exists in the dictionary
         if not self.has_axis(akey): return
         # if mininimum and maximum values are unassigned, get them
-        if (not self.dict_axes[akey].has_minumum()) and (min_val is None):
+        if (not self.dict_axes[akey].has_minimum()) and (min_val is None):
             # assign the minimum value
             # self.set_minimum_value(akey)
             pass

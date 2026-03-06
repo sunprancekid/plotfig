@@ -233,10 +233,12 @@ class Axis (object):
     -----------
     l : Label
         axis title as string and font size
-    max_val : float
+    max : float
         maximum axis value
-    min_val : float
+    min : float
         minimum axis vlue
+    pad_val : float
+        pad axis limits by a precentage value
     scale : string
         assigned type of either linear or log scale
     major_ticks : list of float
@@ -262,6 +264,10 @@ class Axis (object):
         resets the minimum and maximum limits.
     set_limits():
         assigns limits to minimum and / or maximum limits.
+    reset_pad_val():
+        reset the axis padding value to 'None'.
+    has_pad_val():
+        determines if padding value has been assigned to Axis.
     pad_limits():
         scale limits by a percentage
     reset_maximum():
@@ -493,6 +499,7 @@ class Axis (object):
 
         self.reset_minimum()
         self.reset_maximum()
+        self.reset_pad_val()
 
     def set_limits (self, min_val = None, max_val = None):
         """ assigns limits to minimum and / or maximum limits.
@@ -511,12 +518,39 @@ class Axis (object):
         self.set_maximum(max_val)
         self.set_minimum(min_val)
 
-    def pad_limits (self, padval = default_padding_value):
+    def reset_pad_val(self):
+        """ reset the axis padding value to 'None'.
+
+        Parameters:
+        -----------
+        None
+
+        Returns:
+        --------
+        None
+        """
+        self.pad_val = None
+
+    def has_pad_val(self):
+        """ returns boolean determining if a padding value has been assigned to the axis.
+
+        Parameters:
+        -----------
+        None
+
+        Returns:
+        --------
+        bool
+            'True' if the axis has a padding value, else 'False'.
+        """
+        return (self.pad_val is not None)
+
+    def pad_limits (self, pad_val = default_padding_value):
         """ scale axis minimum and maximum limits by a percentage.
 
         Parameters:
         -----------
-        padval : float
+        pad_val : float
             (optional) as precentage, amount to scale increase each tickmark by
 
         Returns:
@@ -525,36 +559,16 @@ class Axis (object):
 
         """
 
-        if padval is None:
+        if pad_val is None:
             # if no padding value was passed to the method, return
             return
-        elif (not isinstance(padval, int)) and (not isinstance(padval, float)):
+        elif (not isinstance(pad_val, int)) and (not isinstance(pad_val, float)):
             # unable to pad if value is not real numbered
-            print("ERROR :: Axis.pad_limits() :: unable to use 'padval', not real numbered integer or float types.")
+            print("ERROR :: Axis.pad_limits() :: unable to use 'pad_val', not real numbered integer or float types.")
             return
 
-        if self.is_linearscale():
-            # pad the axis limits according to a logscale
-            maxval = self.get_maximum()
-            minval = self.get_minimum()
-            # pad axis limits according to linear scale
-            self.set_limits(min_val = minval - ((maxval - minval) * padval), max_val = maxval + (maxval - minval) * padval)
-        else:
-            # if self.has_minimum():
-            # pad the axis limits according to a logscale
-            maxval = self.get_maximum()
-            minval = self.get_minimum()
-            # convert to logscale
-            maxval = lin2log(maxval, self.get_logscale_base())
-            minval = lin2log(minval, self.get_logscale_base())
-            # pad
-            maxval = maxval + (maxval - minval) * padval
-            minval = minval - (maxval - minval) * padval
-            # convert to linscale
-            maxval = log2lin (maxval, self.get_logscale_base())
-            minval = log2lin (minval, self.get_logscale_base())
-            # assign new values
-            self.set_limits(min_val = minval, max_val = maxval)
+        # assign the padval to the object
+        self.pad_val = pad_val
 
     def reset_maximum (self):
         """ removes maximum limit.
@@ -605,19 +619,53 @@ class Axis (object):
             # if not double or integer, assign none
             self.max = None
 
-    def get_maximum (self):
+    def get_maximum (self, pad = True):
         """ returns value assigned to axis maximum.
+
+        If the axis has a 'pad_val' and both minimum and maximum values have
+        been assigned, the axis limits can be padded. If requested, the
+        method returns the padded maximum, rather than the maximum value 
+        assigned to the axis. Otherwise, only the maximum value with padding
+        is returned.
 
         Parameters:
         -----------
-        None
+        pad : bool (default 'True')
+            if 'True', returns padded maximum value if possible.
 
         Returns:
         --------
         float
             value assgined to maximum axis limit, or None.
         """
-        return self.max
+        if pad and self.has_minimum() and self.has_maximum() and self.has_pad_val():
+            # return the padded maximum
+            maxval = self.max
+            minval = self.min
+            padval = self.pad_val
+            if self.is_linearscale():
+                # pad the maximum on a linear scale
+                # pad axis limits according to linear scale
+                pad_max = maxval + (maxval - minval) * padval
+                return pad_max
+            elif self.is_logscale():
+                # pad the maximum on a logarithmic scale
+                # if the maximum value is less than zero, axis limits cannot be padded
+                if maxval <= 0.: return None
+                # if the minimum value is less than zero, axis limits cannot be padded
+                if minval <= 0.: return self.max
+                # convert to logscale
+                maxval = lin2log(maxval, self.get_logscale_base())
+                minval = lin2log(minval, self.get_logscale_base())
+                # pad
+                pad_max = maxval + (maxval - minval) * padval
+                # convert to linscale
+                pad_max = log2lin (pad_max, self.get_logscale_base())
+                # return the padded maximum value
+                return pad_max
+        else:
+            # return the maximum value without padding
+            return self.max
 
     def has_maximum (self):
         """ returns 'True' if axis has maximum limit, else 'False'.
@@ -681,19 +729,51 @@ class Axis (object):
             # if not int or double, assign None
             self.min = None
 
-    def get_minimum (self):
+    def get_minimum (self, pad = True):
         """ returns value assigned to axis minimum limit.
+
+        If axis has 'pad_val' and both minimum and maximum values have been
+        assigned, the axis limits can be padded. If requested, the method
+        returns the padded minimum value, rather than the assigned one. The
+        padded value is calculated relative to both the minimum and maximum
+        values and depending on whether the axis scale is linear or 
+        logarithmic. Otherwise, the assign minimum value is returned without
+        padding.
 
         Parameters:
         -----------
-        None
+        pad : bool
+            if 'True', incorperate padding when returning Axis minimum limit.
 
         Returns:
         --------
         float
             value assigned to axis minimum limit, or 'None'.
         """
-        return self.min
+        if pad and self.has_minimum() and self.has_maximum() and self.has_pad_val():
+            # return the padded value
+            minval = self.min
+            maxval = self.max
+            padval = self.pad_val
+            if self.is_linearscale():
+                # return the padded minimum according to a linear scale
+                pad_min = minval - ((maxval - minval) * padval)
+                return pad_min
+            elif self.is_logscale():
+                # return the padded minimum according to a logarithmic scale
+                # if the minimum value is less than zero, the axis limits cannot be padded
+                if minval <= 0.: return None
+                # convert to logscale
+                maxval = lin2log(maxval, self.get_logscale_base())
+                minval = lin2log(minval, self.get_logscale_base())
+                # pad
+                pad_min = minval - ((maxval - minval) * padval)
+                # convert to linscale
+                pad_min = log2lin (pad_min, self.get_logscale_base())
+                # return the padded minimum 
+                return pad_min
+        else:
+            return self.min
 
     def has_minimum (self):
         """ returns 'True' if axis has minimum limit, else 'False'.
