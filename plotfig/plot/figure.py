@@ -331,7 +331,7 @@ class Figure (object):
                     return False
         # replace all single items with lists that match the list length
         for c in list(list_dict.keys()):
-            if not isinstance(list_dict, list):
+            if not isinstance(list_dict[c], list):
                 list_dict[c] = [list_dict[c] for i in range(list_len)]
             elif len(list_dict[c]) == 1 and (list_len > 1):
                 list_dict[c] = [list_dict[c][0] for i in range(list_len)]
@@ -347,9 +347,8 @@ class Figure (object):
             # 'list_dict' keys match all columns exactly
             # concatenate 'list_dict' to existing df
             self.df = pd.concat([self.df, pd.DataFrame.from_dict(list_dict)], ignore_index = True)
-
+        ## TODO update axis limits, ... 
         return True
-
 
     def append_lists (self, xlist = None, ylist = None, clist = None, ilist = None, label = None):
         """ append data as lists to object dataframe 'df'.
@@ -377,17 +376,23 @@ class Figure (object):
         --------
         None
         """
-        pass
-        # check if df has been created
-        # if self.df is not None:
-        #     # check if the list match all of the existing columns
-        # else:
-        #     # initialize df with the specified lists
-        #     # initialize axes corresponding to lists
-        # parse data, append to temp df
-        # check all list lengths are the same
-        # concatenate df and temp df
+        # append lists into dictionary, pass the list_dict method
+        list_dict = {}
+        if xlist is not None:
+            list_dict.update({'x': xlist})
+        if ylist is not None:
+            list_dict.update({'y': ylist})
+        if clist is not None:
+            list_dict.update({'c': clist})
+        if ilist is not None:
+            list_dict.update({'i': ilist})
+        elif label is not None:
+            list_dict.update({'i': label})
+        self.append_lists_from_dict(list_dict )
     
+    def append_csv_from_dict (self, filename = None, csv_dict = None):
+        """ use dictionary to import specific columns from csv file."""
+
     # load data from csv file
     def append_from_csv (self, filename = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
         pass
