@@ -403,7 +403,7 @@ class Figure (object):
             list_dict.update({'i': label})
         self.append_lists_from_dict(list_dict )
     
-    def append_df_from_dict (self, df = None, df_dict = None):
+    def append_df_from_dict (self, df = None, df_dict = None, label = None):
         """ use dictionary to import DataFrame columns to specific Figure axes.
 
         Parameters:
@@ -412,6 +412,8 @@ class Figure (object):
             contains data to import to Figure.
         df_dict : Dict[str]
             maps axes as keys to specified DataFrame column headers.
+        label : str
+            label entire dataset, corresponds to 'i' column
 
         Returns:
         --------
@@ -438,6 +440,8 @@ class Figure (object):
         list_dict = {}
         for k in list(df_dict.keys()):
             list_dict.update({k: df[k].to_list()})
+        if label is not None and 'i' not in list(list_dict.keys()):
+            list_dict.update({'i': label})
         # import list_dict to Figure 'df'
         return self.append_lists_from_dict(list_dict)
 
@@ -464,9 +468,24 @@ class Figure (object):
         bool
             'True' if import was successful, else 'False'.
         """
-        pass
+        # check that a data frame was passed to the method
+        if df is None:
+            print("ERROR :: Figure.append_df() :: must provide DataFrame 'df' as argument.")
+            return False
+        # create dictionary mapping axes to df columns
+        df_dict = {}
+        if xcol is not None:
+            df_dict.update({'x': xcol})
+        if ycol is not None:
+            df_dict.update({'y': ycol})
+        if ccol is not None:
+            df_dict.update({'c': ccol})
+        if icol is not None:
+            df_dict.update({'i': icol})
+        # pass the df_dict method
+        return self.append_df_from_dict(df, df_dict, label)
 
-    def append_csv_from_dict (self, filename = None, csv_dict = None):
+    def append_csv_from_dict (self, filename = None, csv_dict = None, label = None):
         """ use dictionary to import specific columns from csv file.
 
         Parameters:
@@ -475,6 +494,8 @@ class Figure (object):
             path to csv file
         csv_dict : Dict[str] or Dict[int]
             maps csv columns to axes in Figure.
+        label : str
+            label entire dataset, corresponds to 'i' column
         
         Returns:
         --------
@@ -482,9 +503,16 @@ class Figure (object):
             'True' is successful, else 'False'.
         """
         # check that the file exists
+        if filename is None:
+            print("ERROR :: Figure.append_csv_from_dict() :: must specify argument 'filename' with path to csv file.")
+            return False
+        elif not os.path.exists(filename):
+            print("ERROR :: Figure.append_csv_from_dict() :: Unable to find csv file '{0}'.".format(filename))
+            return False
         # open the file as a dataframe
+        df = pd.DataFrame.read_csv(filename)
         # create list dict and import each column
-        pass
+        return self.append_df_from_dict(df, df_dict, label)
 
     def append_csv (self, filename = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
         """ append columns in csv file to Figure DataFramee 'df'.
@@ -509,7 +537,16 @@ class Figure (object):
         bool
             'True' if successful, else 'False'.
         """
-        pass
+        if filename is None:
+            print("ERROR :: Figure.append_csv_from_dict() :: must specify argument 'filename' with path to csv file.")
+            return False
+        elif not os.path.exists(filename):
+            print("ERROR :: Figure.append_csv_from_dict() :: Unable to find csv file '{0}'.".format(filename))
+            return False
+        # load df from csv file
+        df = pd.DataFrame.read_csv(filename)
+        # pass to append df method
+        return self.append_df(df = df, xcol = xcol, yxcol = yxcol, ccol = ccol, icol = icol, label = label)
 
     # load data from csv file
     def append_from_csv (self, filename = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
