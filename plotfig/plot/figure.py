@@ -356,6 +356,11 @@ class Figure (object):
             self.ccol = 'c'
         if 'i' in list(self.df.columns.values):
             self.icol = 'i'
+        self.set_xaxis_limits(padval = default_padding_value)
+        self.set_yaxis_limits(padval = default_padding_value)
+        self.reset_markers()
+        self.reset_labels()
+        self.reset_colors()
         return True
 
     def append_lists (self, xlist = None, ylist = None, clist = None, ilist = None, label = None):
