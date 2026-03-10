@@ -348,6 +348,14 @@ class Figure (object):
             # concatenate 'list_dict' to existing df
             self.df = pd.concat([self.df, pd.DataFrame.from_dict(list_dict)], ignore_index = True)
         ## TODO update axis limits, ... 
+        if 'x' in list(self.df.columns.values):
+            self.xcol = 'x'
+        if 'y' in list(self.df.columns.values):
+            self.ycol = 'y'
+        if 'c' in list(self.df.columns.values):
+            self.ccol = 'c'
+        if 'i' in list(self.df.columns.values):
+            self.icol = 'i'
         return True
 
     def append_lists (self, xlist = None, ylist = None, clist = None, ilist = None, label = None):
@@ -390,8 +398,113 @@ class Figure (object):
             list_dict.update({'i': label})
         self.append_lists_from_dict(list_dict )
     
+    def append_df_from_dict (self, df = None, df_dict = None):
+        """ use dictionary to import DataFrame columns to specific Figure axes.
+
+        Parameters:
+        -----------
+        df : DataFrame
+            contains data to import to Figure.
+        df_dict : Dict[str]
+            maps axes as keys to specified DataFrame column headers.
+
+        Returns:
+        --------
+        bool
+            'True' if operation was successful, else 'False'.
+        """
+        # check that the DataFrame was passed to the method
+        if df is None:
+            print("ERROR :: Figure.append_df_from_dict() :: 'df' must be provided as argument to method.")
+            return False
+        # if the Figure already has a data frame
+        if self.df is not None:
+            # check that keys corresponds to column header in Figure 'df'
+            for k in list(df_dict.keys()):
+                if k not in list(self.df.columns.values):
+                    print("ERROR :: Figure.append_df_from_dict() :: 'df_dict' key '{0}' not found in Figure 'df' column headers.".format(k))
+                    return False
+            # check that the key values correspond to headers in argument 'df'
+            for k in list(df_dict.keys()):
+                if df_dict[k] not in list(df.columns.values):
+                    print("ERROR :: Figure.append_df_from_dict() :: 'df_dict' key '{0}' value '{1}'' not found in argument 'df' header.".format(k, df_dict[k]))
+                    return False 
+        # initialize list_dict, import all columns from df
+        list_dict = {}
+        for k in list(df_dict.keys()):
+            list_dict.update({k: df[k].to_list()})
+        # import list_dict to Figure 'df'
+        return self.append_lists_from_dict(list_dict)
+
+    def append_df (self, df = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
+        """ import df columns to Figure.
+
+        Parameters
+        ----------
+        df : DataFrame
+            contains data to import
+        xcol : str (optional)
+            df column that maps to x-axis data.
+        ycol : str (optional)
+            df column that maps to y-axis data.
+        ccol : str (optional)
+            df column that maps to c-axis data.
+        icol : str (optional)
+            df column that maps to i-axis data.
+        label : str (optional)
+            data set label, replaces icol with single value.
+
+        Returns:
+        --------
+        bool
+            'True' if import was successful, else 'False'.
+        """
+        pass
+
     def append_csv_from_dict (self, filename = None, csv_dict = None):
-        """ use dictionary to import specific columns from csv file."""
+        """ use dictionary to import specific columns from csv file.
+
+        Parameters:
+        -----------
+        filename : str
+            path to csv file
+        csv_dict : Dict[str] or Dict[int]
+            maps csv columns to axes in Figure.
+        
+        Returns:
+        --------
+        bool
+            'True' is successful, else 'False'.
+        """
+        # check that the file exists
+        # open the file as a dataframe
+        # create list dict and import each column
+        pass
+
+    def append_csv (self, filename = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
+        """ append columns in csv file to Figure DataFramee 'df'.
+
+        Parameters:
+        -----------
+        filename : str
+            path to csv file.
+        xcol : str or int
+            header or column number containing x-axis data.
+        ycol : str or int
+            header or column number containing y-axis data.
+        ccol : str or int
+            header or column number containing c-axis data.
+        icol : str or int
+            header or column number containing i-axis data.
+        label : str or int (optional)
+            label dataset, replaces i-axis.
+
+        Returns:
+        --------
+        bool
+            'True' if successful, else 'False'.
+        """
+        pass
 
     # load data from csv file
     def append_from_csv (self, filename = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
