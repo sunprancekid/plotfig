@@ -103,6 +103,16 @@ class Figure (object):
 
     Methods:
     --------
+    set_dpi:
+        assigns dpi used for generating figure.
+    get_dpi:
+        returns dpi assigned for generating figure.
+    set_saveas:
+        assigns filename and location when saving figure.
+    get_saveas:
+        returns save path, including directory, filename, and filetype.
+    save_data:
+        saves data used for generate figure as csv in save directory.
     reset_axes:
         resets all axes dictionary.
     has_axis:
@@ -165,17 +175,6 @@ class Figure (object):
         return string representation of subtitle lable.
     has_subtitle_label:
         determines if string has been assigned to subtitle label.
-    set_dpi:
-        assigns dpi used for generating figure.
-    get_dpi:
-        returns dpi assigned for generating figure.
-    set_saveas:
-        assigns filename and location when saving figure.
-    get_saveas:
-        returns save path, including directory, filename, and filetype.
-    save_data:
-        saves data used for generate figure as csv in save directory.
-
     """
 
     """ standard initialization routine for Figure object. """
@@ -256,6 +255,43 @@ class Figure (object):
         # adjust dpi
         self.set_dpi (d = pubdefault_dpi)
 
+    ## DPI ##
+
+    def set_dpi (self, d = None):
+        """ assign dpi used for figure.
+
+        If unassigned, 'default_dpi' is used.
+
+        Arguments:
+        ----------
+        d : int
+            dpi used when generating figure with plot.
+
+        Returns:
+        --------
+        None
+        """
+        if d is None or not isinstance(d, int):
+            self.dpi = default_dpi
+        else:
+            if d < minimum_dpi:
+                self.dpi = minimum_dpi
+
+    def get_dpi (self):
+        """ returns the dpi assigned to the figure.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        int
+            dpi used for generating figure.
+        """
+        return self.dpi
+
+    ## IO ##
 
     ## DATA HANDLING ##
 
@@ -272,6 +308,105 @@ class Figure (object):
         self.icol_marker_dict = None
         self.icol_label_dict = None
         self.icol_color_dict = None
+
+    def set_saveas(self, savedir = default_file_location, filename = default_file_name, filetype = default_file_type):
+        """ assigns filename and location when saving figure.
+
+        Arguments:
+        ----------
+        savedir : str
+            path to save directory.
+        filename : str
+            name of file without extension.
+        filetype : str
+            must be within 'accepted_filetypes'.
+
+        Returns:
+        --------
+        None
+        """
+
+        # check the save directory passed to the method
+        if not os.path.exists(savedir):
+            # if the directory does not exist, make it
+            os.makedirs(savedir)
+            self.savedir = savedir
+        else:
+            self.savedir = savedir
+
+        # check the filename passed to the method
+        if type(filename) is not str:
+            self.filename = default_file_name
+        else:
+            self.filename = filename
+
+        # check the filetype passed to the method
+        if filetype not in accepted_filetypes:
+            self.filetype = default_file_type
+        else:
+            self.filetype = filetype
+
+    def get_saveas(self):
+        """ returns save path, including directory, filename, and filetype.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        str
+            complete path to save file.
+        """
+        saveas = self.savedir + self.filename + self.filetype
+        return saveas
+
+    def save_data(self):
+        """ saves data used for generate figure as csv in save directory.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        None
+        """
+        self.df.to_csv(self.savedir + self.filename + ".csv", index = False)
+
+    def get_col_val_list (self, col = None, icol = None, ival = None):
+        """ returns list of values from column, which can additionally match secondary column.
+
+        Arguments:
+        ----------
+        col : str
+            corresponds to column header in Figure 'df'.
+        icol : str
+            secondary column in Figure 'df' which contains matching criteria.
+        ival : str
+            value in 'icol' which exists.
+
+        Returns:
+        --------
+        List
+            values from 'col' which additionally can match values in 'icol'.
+        """
+        # check that col exists in the axis dictionary
+        if (col not in list(self.df.columns.values)):
+            print("ERROR :: Figure.get_col_val_list() :: col '{0}' does not exist in figure DataFrame.".format(col))
+            return []
+        # return the requested data to the user
+        if (icol is not None) and (ival is not None):
+            # check that icol exists in the axis dictionary
+            if (icol is not None) and (icol not in list(self.df.columns.values)):
+                print("ERROR :: Figure.get_col_val_list() :: icol '{0}' does not exist in figure DataFrame.".format(icol))
+                return []
+            # get the isolated values
+            tempdf = self.df[self.df[self.icol] == ival]
+            return tempdf[col].to_list()
+        else:
+            # return the entire list
+            return self.df[col].to_list()
 
     def append_lists_from_dict (self, list_dict = None):
         """ append data stored in dictionary to Figure object.
@@ -547,126 +682,6 @@ class Figure (object):
         df = pd.DataFrame.read_csv(filename)
         # pass to append df method
         return self.append_df(df = df, xcol = xcol, yxcol = yxcol, ccol = ccol, icol = icol, label = label)
-
-    # load data from csv file
-    def append_from_csv (self, filename = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
-        pass
-        # create data frame from file
-        df_load = pd.read_csv(filename)
-
-        # check each coloumn exists, if specified
-        if (xcol is not None) and (xcol not in df_load.columns):
-            # throw error
-            print("ERROR :: Figure.append_from_csv :: '{:s}' column does not exist in '{:s}'.".format(xcol, filename))
-            return
-        if (ycol is not None) and (ycol not in df_load.columns):
-            # throw error
-            print("ERROR :: Figure.append_from_csv :: '{:s}' column does not exist in '{:s}'.".format(ycol, filename))
-            return
-        if (ccol is not None) and (ccol not in df_load.columns):
-            print("ERROR :: Figure.append_from_csv :: '{:s}' column does not exist in '{:s}'.".format(ccol, filename))
-            return
-        if (icol is not None) and (icol not in df_load.columns):
-            print("ERROR :: Figure.append_from_csv :: '{:s}' column does not exist in '{:s}'.".format(icol, filename))
-            return
-
-        # if a data frame has not already been created, pass data frame to load_data method
-        if self.df is None:
-            self.load_data(d = df_load, xcol = xcol, ycol = ycol, ccol = ccol, icol = icol, label = label)
-        else:
-            # append data to existing dataframe
-            df_dict = {}
-            if xcol is not None:
-                df_dict.update({self.xcol: df_load[xcol].to_list()})
-
-            if ycol is not None:
-                df_dict.update({self.ycol: df_load[ycol].to_list()})
-
-            if ccol is not None:
-                df_dict.update({self.ccol: df_load[ccol].to_list()})
-
-            if icol is not None:
-                df_dict.update({self.icol: df_load[icol].to_list()})
-            elif label is not None and self.icol is not None:
-                df_dict.update({self.icol: [label for _ in range(len(df_dict[self.xcol]))]})
-
-            # update dataframe
-            self.df = pd.concat([self.df, pd.DataFrame(df_dict)], ignore_index = True)
-            self.set_xaxis_limits(padval = default_padding_value)
-            self.set_yaxis_limits(padval = default_padding_value)
-            self.reset_markers()
-            self.reset_labels()
-            self.reset_colors()
-
-    # method that loads data from dataframe into figure object
-    """ loads data from data frame into Figure object. xcol specifies the xaxis data, ycol specifies the yaxis data, ccol specifies the color column data, icol specifies the isolation column data. """
-    def load_data (self, d = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
-
-        # data frame must be passed to method
-        if d is None:
-            # df has not been specified, cannot load data
-            print("ERROR :: Figure.load_data() :: must pass dataframe to method as 'd'.")
-            return
-
-        if xcol is None or ycol is None:
-            print("ERROR :: Figure.load_data() :: must specify 'xcol' and 'ycol'.")
-            return
-
-        # reset data and load
-        self.reset_data()
-        df_dict = {}
-
-        # add xcol if it is specified
-        if xcol is not None:
-            self.xcol = xcol
-            df_dict.update({xcol: d[xcol].to_list()})
-
-        # add ycol if it is specified
-        if ycol is not None:
-            self.ycol = ycol
-            df_dict.update({ycol: d[ycol].to_list()})
-
-        # add ccol if it is specified
-        if ccol is not None:
-            self.ccol = ccol
-            df_dict.update({ccol: d[ccol].to_list()})
-
-        # add icol if it is specified
-        if icol is not None:
-            self.icol = icol
-            df_dict.update({icol: d[icol].to_list()})
-        elif label is not None:
-            self.icol = 'icol'
-            df_dict.update({'icol': [label for _ in range(len(df_dict[xcol]))]})
-
-        self.df = pd.DataFrame(df_dict)
-        self.set_xaxis_limits(padval = default_padding_value)
-        self.set_yaxis_limits(padval = default_padding_value)
-        self.reset_markers()
-        self.reset_labels()
-        self.reset_colors()
-
-    # method that returns list of xvalues
-    """ returns list of xvals contained within xcol. if ival is specified, xvals returned are those which share the same ival in icol (if any). """
-    def get_xval_list (self, ival = None):
-        if ival is None:
-            # return all xvals as a list
-            return self.df[self.xcol].to_list()
-        else:
-            # return xvals which share the same ival (if any)
-            tmpdf = self.df[self.df[self.icol] == ival]
-            return tmpdf[self.xcol].to_list()
-
-    # method that returns list of yvalues
-    """ returns list of yvals contained within ycol. if ival is specified, yvals returned are those which share the same ival in icol (if any)."""
-    def get_yval_list (self, ival = None):
-        if ival is None:
-            # return all yvals as a list
-            return self.df[self.ycol].to_list()
-        else:
-            # return yvales which share the same ival (if any)
-            tmpdf = self.df[self.df[self.icol] == ival]
-            return tmpdf[self.ycol].to_list()
 
     # initialize list of labels that correspons to each unique ival in icol
     """ method initializes labels used to describe each unique ival in plots as that ival stored within that Figure dataframe. """
@@ -1508,9 +1523,22 @@ class Figure (object):
         """
         return bool(self.subtitle_label.get_label())
 
-    ## XAXIS ##
+    ## THESE METHODS ARE PERMINANTLY DEPRICATED
 
-    ## TODO :: depricate these methods perminantly
+    def get_xval_list (self, ival = None):
+        self.get_col_val_list(col = 'x', icol = 'i', ival = ival)
+
+    def get_yval_list (self, ival = None):
+        self.get_col_val_list(col = 'y', icol = 'i', ival = ival)
+
+    # load data from csv file
+    def append_from_csv (self, filename = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
+        self.append_csv(filename = filename, xcol = xcol, ycol = ycol, ccol = ccol, icol = icol, label = label)
+ 
+    def load_data (self, d = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
+        self.append_df(df = d, xcol = xcol, ycol = ycol, ccol = None, icol = None, label = label)
+
+    ## XAXIS ##
 
     def reset_xaxis(self):
         self.xaxis = Axis()
@@ -1642,108 +1670,6 @@ class Figure (object):
     def yaxis_has_minor_ticks(self):
         return self.axis_has_minor_ticks('y')
 
-    ## DPI ##
-
-    def set_dpi (self, d = None):
-        """ assign dpi used for figure.
-
-        If unassigned, 'default_dpi' is used.
-
-        Arguments:
-        ----------
-        d : int
-            dpi used when generating figure with plot.
-
-        Returns:
-        --------
-        None
-        """
-        if d is None or not isinstance(d, int):
-            self.dpi = default_dpi
-        else:
-            if d < minimum_dpi:
-                self.dpi = minimum_dpi
-
-    def get_dpi (self):
-        """ returns the dpi assigned to the figure.
-
-        Arguments:
-        ----------
-        None
-
-        Returns:
-        --------
-        int
-            dpi used for generating figure.
-        """
-        return self.dpi
-
-    ## IO ##
-
-    def set_saveas(self, savedir = default_file_location, filename = default_file_name, filetype = default_file_type):
-        """ assigns filename and location when saving figure.
-
-        Arguments:
-        ----------
-        savedir : str
-            path to save directory.
-        filename : str
-            name of file without extension.
-        filetype : str
-            must be within 'accepted_filetypes'.
-
-        Returns:
-        --------
-        None
-        """
-
-        # check the save directory passed to the method
-        if not os.path.exists(savedir):
-            # if the directory does not exist, make it
-            os.makedirs(savedir)
-            self.savedir = savedir
-        else:
-            self.savedir = savedir
-
-        # check the filename passed to the method
-        if type(filename) is not str:
-            self.filename = default_file_name
-        else:
-            self.filename = filename
-
-        # check the filetype passed to the method
-        if filetype not in accepted_filetypes:
-            self.filetype = default_file_type
-        else:
-            self.filetype = filetype
-
-    def get_saveas(self):
-        """ returns save path, including directory, filename, and filetype.
-
-        Arguments:
-        ----------
-        None
-
-        Returns:
-        --------
-        str
-            complete path to save file.
-        """
-        saveas = self.savedir + self.filename + self.filetype
-        return saveas
-
-    def save_data(self):
-        """ saves data used for generate figure as csv in save directory.
-
-        Arguments:
-        ----------
-        None
-
-        Returns:
-        --------
-        None
-        """
-        self.df.to_csv(self.savedir + self.filename + ".csv", index = False)
 
     ## LINEAR OR LOG SCALE ##
 
