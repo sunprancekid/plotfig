@@ -398,11 +398,11 @@ class Figure (object):
         # return the requested data to the user
         if (icol is not None) and (ival is not None):
             # check that icol exists in the axis dictionary
-            if (icol is not None) and (icol not in list(self.df.columns.values)):
+            if icol not in list(self.df.columns.values):
                 print("ERROR :: Figure.get_col_val_list() :: icol '{0}' does not exist in figure DataFrame.".format(icol))
                 return []
             # get the isolated values
-            tempdf = self.df[self.df[self.icol] == ival]
+            tempdf = self.df[self.df[icol] == ival]
             return tempdf[col].to_list()
         else:
             # return the entire list
@@ -1526,10 +1526,10 @@ class Figure (object):
     ## THESE METHODS ARE PERMINANTLY DEPRICATED
 
     def get_xval_list (self, ival = None):
-        self.get_col_val_list(col = 'x', icol = 'i', ival = ival)
+        return self.get_col_val_list(col = 'x', icol = 'i', ival = ival)
 
     def get_yval_list (self, ival = None):
-        self.get_col_val_list(col = 'y', icol = 'i', ival = ival)
+        return self.get_col_val_list(col = 'y', icol = 'i', ival = ival)
 
     # load data from csv file
     def append_from_csv (self, filename = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
