@@ -574,7 +574,7 @@ class Figure (object):
         # initialize list_dict, import all columns from df
         list_dict = {}
         for k in list(df_dict.keys()):
-            list_dict.update({k: df[k].to_list()})
+            list_dict.update({k: df[df_dict[k]].to_list()})
         if label is not None and 'i' not in list(list_dict.keys()):
             list_dict.update({'i': label})
         # import list_dict to Figure 'df'
@@ -1536,7 +1536,7 @@ class Figure (object):
         self.append_csv(filename = filename, xcol = xcol, ycol = ycol, ccol = ccol, icol = icol, label = label)
  
     def load_data (self, d = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
-        self.append_df(df = d, xcol = xcol, ycol = ycol, ccol = None, icol = None, label = label)
+        self.append_df(df = d, xcol = xcol, ycol = ycol, ccol = ccol, icol = icol, label = label)
 
     ## XAXIS ##
 
