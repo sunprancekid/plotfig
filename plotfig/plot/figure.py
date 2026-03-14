@@ -71,10 +71,6 @@ discrete_matplotlib_cmaps = ['Pastel1', 'Pastel2', 'Paired', 'Accent', 'Dark2',
 
 ## TODO :: rename - ano.viz!
 ## TODO :: docstring figure
-## TODO :: update data handling methods, add for loading lists, appending, (more diversity)
-## TODO :: new columns, x1, x2, ..., y1, y2, ..., i1, i2, ...., c1, c2, ....
-##          - I see these being a set of accepted axis that can be stored and accessed
-##          - the challenging part will be loading and handling data sets with different arrays
 ## TODO :: create color and scheme classes 
 ##          - color has the properties of individual colors
 ##          - schedme handles generating color arrays
@@ -294,8 +290,6 @@ class Figure (object):
     ## IO ##
 
     ## DATA HANDLING ##
-
-    ## GOAL :: append in multiple method calls, with differing structures
 
     # method used to initialize data stored withing figure object
     """ initializes data stored withing figure object. dataframe is removed, x, y, c, and i columns are reset. """
@@ -890,8 +884,6 @@ class Figure (object):
 
     ## AXES ##
 
-    ## GOAL :: reduce number of methods needed for handling axes
-
     ## AXES - LABEL ##
 
     def reset_axes (self): 
@@ -1004,7 +996,6 @@ class Figure (object):
 
     ## AXES - LIMITS ## 
 
-    ## TODO :: akey corresponds to column in figure dataframe
     ## TODO :: akey corresponds to axis data type
 
     def set_axis_limits (self, akey = None, min_val = None, max_val = None, pad_val = None):
