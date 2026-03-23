@@ -675,7 +675,7 @@ class Figure (object):
         # load df from csv file
         df = pd.read_csv(filename)
         # pass to append df method
-        return self.append_df(df = df, xcol = xcol, yxcol = yxcol, ccol = ccol, icol = icol, label = label)
+        return self.append_df(df = df, xcol = xcol, ycol = ycol, ccol = ccol, icol = icol, label = label)
 
     # initialize list of labels that correspons to each unique ival in icol
     """ method initializes labels used to describe each unique ival in plots as that ival stored within that Figure dataframe. """
