@@ -639,7 +639,7 @@ class Figure (object):
             print("ERROR :: Figure.append_csv_from_dict() :: Unable to find csv file '{0}'.".format(filename))
             return False
         # open the file as a dataframe
-        df = pd.DataFrame.read_csv(filename)
+        df = pd.read_csv(filename)
         # create list dict and import each column
         return self.append_df_from_dict(df, df_dict, label)
 
@@ -673,7 +673,7 @@ class Figure (object):
             print("ERROR :: Figure.append_csv_from_dict() :: Unable to find csv file '{0}'.".format(filename))
             return False
         # load df from csv file
-        df = pd.DataFrame.read_csv(filename)
+        df = pd.read_csv(filename)
         # pass to append df method
         return self.append_df(df = df, xcol = xcol, yxcol = yxcol, ccol = ccol, icol = icol, label = label)
 
