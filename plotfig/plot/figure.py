@@ -15,6 +15,7 @@ from matplotlib import colormaps as mcmaps
 # local
 from plot.axis import Label, Axis
 from plot.color import Scheme, Color
+from plot.style import Style
 
 
 ################
@@ -289,20 +290,6 @@ class Figure (object):
 
     ## IO ##
 
-    ## DATA HANDLING ##
-
-    # method used to initialize data stored withing figure object
-    """ initializes data stored withing figure object. dataframe is removed, x, y, c, and i columns are reset. """
-    def reset_data (self):
-        self.df = None
-        self.xcol = None
-        self.ycol = None
-        self.ccol = None
-        self.icol = None
-        self.icol_marker_dict = None
-        self.icol_label_dict = None
-        self.icol_color_dict = None
-
     def set_saveas(self, savedir = default_file_location, filename = default_file_name, filetype = default_file_type):
         """ assigns filename and location when saving figure.
 
@@ -367,6 +354,29 @@ class Figure (object):
         None
         """
         self.df.to_csv(self.savedir + self.filename + ".csv", index = False)
+
+    ## DATA HANDLING ##
+
+    def reset_data (self):
+        """ reset the data stored in figure.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        None
+        """
+        self.df = None
+        self.xcol = None
+        self.ycol = None
+        self.ccol = None
+        self.icol = None
+        self.icol_style_dict = None
+        self.icol_marker_dict = None
+        self.icol_label_dict = None
+        self.icol_color_dict = None
 
     def get_col_val_list (self, col = None, icol = None, ival = None):
         """ returns list of values from column, which can additionally match secondary column.
@@ -677,6 +687,8 @@ class Figure (object):
         # pass to append df method
         return self.append_df(df = df, xcol = xcol, ycol = ycol, ccol = ccol, icol = icol, label = label)
 
+    ## DATA LABEL ##
+
     # initialize list of labels that correspons to each unique ival in icol
     """ method initializes labels used to describe each unique ival in plots as that ival stored within that Figure dataframe. """
     def reset_labels(self):
@@ -708,15 +720,34 @@ class Figure (object):
     def add_format(self, format_string = None):
         self.format_string = format_string
 
-    # method that determines if isolation column has been specified within the dataframe
-    """ returns boolean the determines if isolation column has been specified within dataframe. """
     def has_ivals(self):
+        """ determines if Figure has unique ivalues
+        
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        bool
+            'True' if Figure has ivalues, otherwas 'False'
+        """
         return self.icol is not None
 
-    # method that returns unique values for the isolation column
-    """ returns list of all unique values contained within icol. """
     def get_unique_ivals (self, rev = False):
-        if self.icol is not None:
+        """ returns list of each unique ivalues stored within Figure
+
+        Arguments:
+        ----------
+        rev : bool
+            if 'True', returns list in reverse order.
+
+        Returns:
+        --------
+        List['str']
+            list of ivalues stored within Figure
+        """
+        if self.has_ivals():
             # if an icol has been specified return all unique items
             l = self.df[self.icol].unique()
             if rev:
@@ -727,7 +758,89 @@ class Figure (object):
             # otherwise, if an icol has not been specified, return a list with empty string
             return [""]
 
+        def has_ival (self, ival):
+            """ determines if ivalue exists within figure unique ivalues.
+
+            Arguments:
+            ----------
+            ival : str
+                ivalue to check for in Figure
+
+            Returns:
+            --------
+            bool
+                'True' if ivalue exists in Figure unique ivalues, else 'False'.
+            """
+            if not self.has_ivals(): return False 
+            if (ival not in self.get_unique_ivals()):
+                return False
+            else:
+                return True 
+
+    ## STYLES ##
+
+    def reset_style (self):
+        """ reset the styles associated with data sets.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        None
+        """
+        pass
+        # if no data, dict is empty
+        if (not self.has_ivals()):
+            # there are not ivalues
+            if xcol is not None:
+                # there is data, assign initial style to dict
+                self.icol_style_dict = Style()
+            else:
+                # there is no data, assign empty dict
+                self.icol_style_dict = None
+        else:
+            # there are mutlple data sets, assign unique style for each ival
+            self.icol_style_dict = {}
+            for i in self.get_unique_ivals():
+                self.icol_style_dict.update({i: Style()})
+
+    def set_style (self, ival = None, marker = None):
+        """ set the style associated with a particular data set.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        bool 
+            'True' if operation was successful, else 'False'.
+        """
+        # check if ival was specified
+        if (ival is None) and (self.has_ivals()):
+            # ival has not been specified but figure has ivals
+            print("ERROR :: Figure.set_style() :: method arguments 'ival' was unspecified but Figure object has unique ivals.")
+            return False
+        # assign styles 
+        if ival is None:
+            # ival has not been specified
+            self.icol_style_dict.update()
+        else:
+            # ival has been specified
+            # check that it exists
+            if not self.has_ival(ival):
+                # the ivalue does not exist in the set, report an error
+                print("ERROR :: Figure.set_style() :: method argument 'ival' does not exist in Figure.")
+                return False
+
     ## MARKERS ## 
+
+    ## LINE ##
+
+    ## lines have, markers, sizes, widths, dash styles, fill, edge color, edge width
+    ## ikey is used to set them for each unique dataset 
 
     ## GOAL :: encapsulate marker calls within color and scheme
 

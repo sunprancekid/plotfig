@@ -225,7 +225,6 @@ class Label (object):
 
 ## Axis class
 class Axis (object):
-
     """
     contains information corresponding to one axis in plotted figures.
 
