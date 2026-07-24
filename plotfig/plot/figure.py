@@ -52,6 +52,9 @@ scale_log = "log"
 default_scale = scale_linear
 default_padding_value = 0.05
 
+## constants, defaults for color class
+default_marker = 'D'
+
 ## corresponding to color maps
 default_matplotlib_cmaps = list(mcmaps)
 discrete_matplotlib_cmaps = ['Pastel1', 'Pastel2', 'Paired', 'Accent', 'Dark2',
@@ -497,7 +500,9 @@ class Figure (object):
             self.icol = 'i'
         self.set_xaxis_limits(padval = default_padding_value)
         self.set_yaxis_limits(padval = default_padding_value)
-        self.reset_markers()
+        self.update_styles()
+        # self.reset_style()
+        # self.reset_markers()
         self.reset_labels()
         self.reset_colors()
         return True
@@ -777,6 +782,25 @@ class Figure (object):
             else:
                 return True 
 
+    def has_ival (self, ival):
+        """ check if ival exists in figure unique ivals.
+
+        Arguments:
+        ----------
+        ival :: str
+            ival to check for in Figure
+
+        Returns:
+        --------
+        bool
+            'True' if ival exists in figure, else 'False'.
+        """
+        if (not self.has_ivals()): return False
+        if (ival not in self.get_unique_ivals()):
+            return False
+        else:
+            return True
+
     ## STYLES ##
 
     def reset_style (self):
@@ -790,11 +814,10 @@ class Figure (object):
         --------
         None
         """
-        pass
         # if no data, dict is empty
         if (not self.has_ivals()):
             # there are not ivalues
-            if xcol is not None:
+            if self.xcol is not None:
                 # there is data, assign initial style to dict
                 self.icol_style_dict = Style()
             else:
@@ -805,6 +828,37 @@ class Figure (object):
             self.icol_style_dict = {}
             for i in self.get_unique_ivals():
                 self.icol_style_dict.update({i: Style()})
+
+    def update_styles(self):
+        """ update style dict with new ival additions.
+
+        Arguments:
+        ----------
+        None
+
+        Returns:
+        --------
+        None
+        """
+        if self.has_ivals():
+            # if figure has ivals
+            # check if the style dict has been initiated
+            if self.icol_style_dict is None:
+                # the style dict has not been initialized
+                # initialize the style dict for each ival
+                self.icol_style_dict = {}
+                for i in self.get_unique_ivals():
+                    self.icol_style_dict.update({i: Style(marker = default_marker)})
+            else:
+                # the style dict has already been set up
+                # loop through dict list and add any styles that don't exist
+                for i in self.get_unique_ivals():
+                    if i not in list(self.icol_style_dict.keys()):
+                        self.icol_style_dict.update({i: Style(marker = default_marker)})
+        else:
+            # if figure does not have ivals
+            # check that the style dict still has one style
+            if self.icol_style_dict is None: self.icol_style_dict = Style(marker = default_marker)
 
     def set_style (self, ival = None, marker = None):
         """ set the style associated with a particular data set.
@@ -837,23 +891,90 @@ class Figure (object):
 
     ## MARKERS ## 
 
-    ## LINE ##
+    def set_marker(self, ival = None, marker = None):
+        """ assigns marker to specified dataset. 
 
-    ## lines have, markers, sizes, widths, dash styles, fill, edge color, edge width
-    ## ikey is used to set them for each unique dataset 
+        Arguments:
+        ----------
+        ival : str / int or List[str / int]
+            subset of ivals to assign marker to
+        marker : str or None
+            marker type to assign to dataset when plotting
+        """
+        # check ival
+        if (ival is None) and (self.has_ivals()):
+            print("ERROR :: Figure.set_marker() :: method argument 'ival' must be specified when Figure has unique ivals.")
+            return
 
-    ## GOAL :: encapsulate marker calls within color and scheme
+        if ival is None: 
+            self.icol_style_dict.set_marker(marker)
+            return
 
-    # initialize set of random set of markers that can be used for each unique ival in icol
-    """ method generates a random set of markers than can be used with matplotlib. """
-    def reset_markers(self, markerset = None):
+        # if ival is a single item, convert to a list
+        if not isinstance(ival, list):
+            ival = [ival]
 
-        # create interable list
+        # loop through each item in list
+        for i in ival:
+            # check if i exists in the unique ivals
+            if not self.has_ival(i):
+                # report error and skip
+                print("ERROR :: Figure.set_marker() :: ival '{0}' passed to method in method argument does not exist in Figure, cannot assign marker '{1}'.".format(i, marker))
+            else:
+                # i exists in ival, assign the marker
+                self.icol_style_dict[i].set_marker(marker)
+
+    def get_marker (self, ival = None):
+        """ get the marker assigned to a particular dataset.
+
+        Arguments:
+        ----------
+        ival : str or int
+            use to subselect dataset from df via icol
+
+        Returns:
+        --------
+        str
+            marker to assign to dataset when plotting.
+        """
+        # if ival is None:
+        #     return default_markerset[0]
+        # else:
+        #     return self.marker_dict[ival]
+        # check ival
+        if (ival is None) and (self.has_ivals()):
+            print("ERROR :: Figure.get_marker() :: method argument 'ival' must be specified when Figure has unique ivals.")
+            return
+        elif (ival is not None) and (not self.has_ival(ival)):
+            print("ERROR :: Figure.get_marker() :: method argument 'ival' ({0}) does not exist in Figure.".format(ival))
+            return
+        # get marker
+        if ival is None:
+            return self.icol_style_dict.get_marker()
+        else:
+            return self.icol_style_dict[ival].get_marker()
+
+    def vary_markers(self, markerset = None):
+        """ vary the markers assigned each unique ival when plotting.
+
+        Arguments:
+        ----------
+        markerset : List[str] (optional, default is 'default_markerset')
+            list of markers which should be varied among ival
+
+        Returns:
+        --------
+        None
+        """
+        # create an iterable set of markers if none is assigned to method
         if markerset is None or type(markerset) is not list:
             # if the marker set is not passed to the method, or is not a list
             markerset = default_markerset
         else:
-            # that marker set passed to the method is a list
+            # check that marker set passed to the method is a list
+            if not isinstance(markerset, list):
+                # convert marker set to list
+                markerset = [markerset]
             # check that the marker set contains the correct number of markers
             # if it does not, add to the marker list from the default until it contains the appropriate number
             if len(markerset) < len(self.get_unique_ivals()):
@@ -866,25 +987,15 @@ class Figure (object):
                     if len(markerset) >= len(self.get_unique_ivals()):
                         break
 
-        # create empty dictionary
+        # iterate markers, assignt to style dict
         marks = itertools.cycle(markerset)
-        self.marker_dict = {} # empty dictionary
         for i in self.get_unique_ivals():
-            self.marker_dict.update({i: next(marks)}) # assign random marker to each ival
+            self.icol_style_dict[i].set_marker(next(marks))
 
-    # adjusts one marker in marker dictionary
-    """ method changes one marker in the marker dictionary to a new marker type. the marker that is changed is the one that corresponds to the ival used as a key in the marker dictionary. """
-    def set_marker(self, ival = None, marker = None):
-        if ival in self.marker_dict:
-            self.marker_dict[ival] = marker
+    ## LINE ##
 
-    # return marker corresponding to ival
-    """ method returns marker that correspons to ival in marker dictionary. """
-    def get_marker (self, ival = None):
-        if ival is None:
-            return default_markerset[0]
-        else:
-            return self.marker_dict[ival]
+    ## lines have, markers, sizes, widths, dash styles, fill, edge color, edge width
+    ## ikey is used to set them for each unique dataset 
 
     ## COLORS ## 
 
