@@ -541,6 +541,7 @@ class Figure (object):
             list_dict.update({'y': ylist})
         if clist is not None:
             list_dict.update({'c': clist})
+        ## todo, if i specified, but the dataframe already exists and does not have an icol ..
         if ilist is not None:
             list_dict.update({'i': ilist})
         elif label is not None:
@@ -763,24 +764,24 @@ class Figure (object):
             # otherwise, if an icol has not been specified, return a list with empty string
             return [""]
 
-        def has_ival (self, ival):
-            """ determines if ivalue exists within figure unique ivalues.
+    def has_ival (self, ival):
+        """ determines if ivalue exists within figure unique ivalues.
 
-            Arguments:
-            ----------
-            ival : str
-                ivalue to check for in Figure
+        Arguments:
+        ----------
+        ival : str
+            ivalue to check for in Figure
 
-            Returns:
-            --------
-            bool
-                'True' if ivalue exists in Figure unique ivalues, else 'False'.
-            """
-            if not self.has_ivals(): return False 
-            if (ival not in self.get_unique_ivals()):
-                return False
-            else:
-                return True 
+        Returns:
+        --------
+        bool
+            'True' if ivalue exists in Figure unique ivalues, else 'False'.
+        """
+        if not self.has_ivals(): return False 
+        if (ival not in self.get_unique_ivals()):
+            return False
+        else:
+            return True 
 
     def has_ival (self, ival):
         """ check if ival exists in figure unique ivals.
@@ -802,6 +803,11 @@ class Figure (object):
             return True
 
     ## STYLES ##
+    # TODO one data set as one ival, ergo, there are always ivals, even if unspecified..
+    #       (if unspecified, does them for all)
+    # TODO add new styles with defaults
+    # TODO add line styles (vary), line width, outer color, fill, 
+    # COLOR
 
     def reset_style (self):
         """ reset the styles associated with data sets.
@@ -860,12 +866,17 @@ class Figure (object):
             # check that the style dict still has one style
             if self.icol_style_dict is None: self.icol_style_dict = Style(marker = default_marker)
 
-    def set_style (self, ival = None, marker = None):
+    def set_style (self, ival = None, marker = None, markersize = None):
         """ set the style associated with a particular data set.
+
+        ...
 
         Arguments:
         ----------
-        None
+        ival : str / int or List[str / int]
+            subset of ivals assign from dataset
+        marker : str (optional, default is 'None')
+            marker assign to ival subset (if not 'None')
 
         Returns:
         --------
@@ -877,19 +888,27 @@ class Figure (object):
             # ival has not been specified but figure has ivals
             print("ERROR :: Figure.set_style() :: method arguments 'ival' was unspecified but Figure object has unique ivals.")
             return False
-        # assign styles 
-        if ival is None:
-            # ival has not been specified
-            self.icol_style_dict.update()
-        else:
-            # ival has been specified
-            # check that it exists
-            if not self.has_ival(ival):
-                # the ivalue does not exist in the set, report an error
-                print("ERROR :: Figure.set_style() :: method argument 'ival' does not exist in Figure.")
-                return False
 
-    ## MARKERS ## 
+        # if ival is none, assign 
+        if ival is None:
+            self.icol_style_dict.update_attributes(marker = marker, markersize = markersize)
+            return True
+
+        # if ival is not a list, change it to one
+        if not isinstance(ival, list): ival = [ival]
+
+        # loop through each item in the list
+        for i in ival:
+            # check that each ival exists in the unique ival list 
+            if not self.has_ival(i):
+                print("ERROR :: Figure.set_style() :: ival '{0}' passed to method in method argument does not exist in Figure, cannot update.".format(i))
+                continue
+            # update the style
+            self.icol_style_dict[i].update(marker = marker, markersize = markersize)
+        # operation successful
+        return True
+
+    ## MARKERS / MARKERSIZE ## 
 
     def set_marker(self, ival = None, marker = None):
         """ assigns marker to specified dataset. 
@@ -901,28 +920,7 @@ class Figure (object):
         marker : str or None
             marker type to assign to dataset when plotting
         """
-        # check ival
-        if (ival is None) and (self.has_ivals()):
-            print("ERROR :: Figure.set_marker() :: method argument 'ival' must be specified when Figure has unique ivals.")
-            return
-
-        if ival is None: 
-            self.icol_style_dict.set_marker(marker)
-            return
-
-        # if ival is a single item, convert to a list
-        if not isinstance(ival, list):
-            ival = [ival]
-
-        # loop through each item in list
-        for i in ival:
-            # check if i exists in the unique ivals
-            if not self.has_ival(i):
-                # report error and skip
-                print("ERROR :: Figure.set_marker() :: ival '{0}' passed to method in method argument does not exist in Figure, cannot assign marker '{1}'.".format(i, marker))
-            else:
-                # i exists in ival, assign the marker
-                self.icol_style_dict[i].set_marker(marker)
+        self.set_style(ival = ival, marker = marker)
 
     def get_marker (self, ival = None):
         """ get the marker assigned to a particular dataset.
@@ -937,11 +935,6 @@ class Figure (object):
         str
             marker to assign to dataset when plotting.
         """
-        # if ival is None:
-        #     return default_markerset[0]
-        # else:
-        #     return self.marker_dict[ival]
-        # check ival
         if (ival is None) and (self.has_ivals()):
             print("ERROR :: Figure.get_marker() :: method argument 'ival' must be specified when Figure has unique ivals.")
             return
@@ -991,6 +984,47 @@ class Figure (object):
         marks = itertools.cycle(markerset)
         for i in self.get_unique_ivals():
             self.icol_style_dict[i].set_marker(next(marks))
+
+    def set_markersize (self, ival = None, markersize = None):
+        """ update the markersize assigned to a subset of ivals.
+
+        Arguments:
+        ----------
+        ival : str / int or List[str / int]
+            subset of ivals in Figure
+        markersize : int
+            markersize to assign to ival subset
+
+        Returns:
+        --------
+        None
+        """
+        self.set_style(ival = ival, markersize = markersize)
+
+    def get_markersize (self, ival):
+        """ returns the markersize assigned to one particular ival.
+
+        Arguments:
+        ----------
+        ival : str / int
+            used to identify data subset in Figure.
+
+        Returns:
+        --------
+        None
+        """
+        if (ival is None) and (self.has_ivals()):
+            print("ERROR :: Figure.get_markersize() :: method argument 'ival' must be specified when Figure has unique ivals.")
+            return
+        elif (ival is not None) and (not self.has_ival(ival)):
+            print("ERROR :: Figure.get_markersize() :: method argument 'ival' ({0}) does not exist in Figure.".format(ival))
+            return
+        # get marker
+        if ival is None:
+            return self.icol_style_dict.get_markersize()
+        else:
+            return self.icol_style_dict[ival].get_markersize()
+
 
     ## LINE ##
 
