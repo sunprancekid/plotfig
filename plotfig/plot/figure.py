@@ -14,7 +14,7 @@ import itertools # used for iterating over markers
 from matplotlib import colormaps as mcmaps
 # local
 from plot.axis import Label, Axis
-from plot.color import Scheme, Color
+# from plot.color import Scheme, Color
 
 
 ################
@@ -570,11 +570,11 @@ class Figure (object):
             for k in list(df_dict.keys()):
                 if df_dict[k] not in list(df.columns.values):
                     print("ERROR :: Figure.append_df_from_dict() :: 'df_dict' key '{0}' value '{1}'' not found in argument 'df' header.".format(k, df_dict[k]))
-                    return False 
+                    return False
         # initialize list_dict, import all columns from df
         list_dict = {}
         for k in list(df_dict.keys()):
-            list_dict.update({k: df[k].to_list()})
+            list_dict.update({k: df[df_dict[k]].to_list()})
         if label is not None and 'i' not in list(list_dict.keys()):
             list_dict.update({'i': label})
         # import list_dict to Figure 'df'
@@ -645,7 +645,7 @@ class Figure (object):
             print("ERROR :: Figure.append_csv_from_dict() :: Unable to find csv file '{0}'.".format(filename))
             return False
         # open the file as a dataframe
-        df = pd.DataFrame.read_csv(filename)
+        df = pd.read_csv(filename)
         # create list dict and import each column
         return self.append_df_from_dict(df, df_dict, label)
 
@@ -679,9 +679,9 @@ class Figure (object):
             print("ERROR :: Figure.append_csv_from_dict() :: Unable to find csv file '{0}'.".format(filename))
             return False
         # load df from csv file
-        df = pd.DataFrame.read_csv(filename)
+        df = pd.read_csv(filename)
         # pass to append df method
-        return self.append_df(df = df, xcol = xcol, yxcol = yxcol, ccol = ccol, icol = icol, label = label)
+        return self.append_df(df = df, xcol = xcol, ycol = ycol, ccol = ccol, icol = icol, label = label)
 
     # initialize list of labels that correspons to each unique ival in icol
     """ method initializes labels used to describe each unique ival in plots as that ival stored within that Figure dataframe. """
@@ -1536,7 +1536,7 @@ class Figure (object):
         self.append_csv(filename = filename, xcol = xcol, ycol = ycol, ccol = ccol, icol = icol, label = label)
  
     def load_data (self, d = None, xcol = None, ycol = None, ccol = None, icol = None, label = None):
-        self.append_df(df = d, xcol = xcol, ycol = ycol, ccol = None, icol = None, label = label)
+        self.append_df(df = d, xcol = xcol, ycol = ycol, ccol = ccol, icol = icol, label = label)
 
     ## XAXIS ##
 
